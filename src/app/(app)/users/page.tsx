@@ -2,7 +2,9 @@ import {
   MoreHorizontal,
   PlusCircle,
   File,
-  User as UserIcon,
+  Mail,
+  ShieldCheck,
+  CircleOff,
 } from "lucide-react";
 import {
   Card,
@@ -19,14 +21,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -68,14 +62,13 @@ const users = [
 
 export default function UsersPage() {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+     <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Users</CardTitle>
-            <CardDescription>
+            <h1 className="text-2xl font-semibold">Users</h1>
+            <p className="text-muted-foreground">
               Manage system users and their roles.
-            </CardDescription>
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -92,69 +85,58 @@ export default function UsersPage() {
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>
-                <span className="sr-only">Actions</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="grid gap-0.5">
-                        <p className="font-medium">{user.name}</p>
+              <Card key={user.id}>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                            <Avatar className="h-12 w-12">
+                                <AvatarImage src={user.avatar} alt={user.name} />
+                                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="grid gap-1">
+                                <CardTitle className="text-lg">{user.name}</CardTitle>
+                                <CardDescription className="flex items-center gap-2 text-xs">
+                                    <Mail className="h-3 w-3" />
+                                    {user.email}
+                                </CardDescription>
+                            </div>
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>Change Role</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 dark:text-red-500">Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                   <Badge variant={user.status === 'active' ? 'secondary' : 'destructive'} className={user.status === 'active' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}>
-                    {user.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Change Role</DropdownMenuItem>
-                       <DropdownMenuItem className="text-red-600 dark:text-red-500">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
+                </CardHeader>
+                <CardContent className="grid gap-2">
+                    <div className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                        <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
+                            {user.role}
+                        </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {user.status === 'active' ? <div className="h-4 w-4 rounded-full bg-green-500" /> : <CircleOff className="h-4 w-4 text-muted-foreground" />}
+                        <span className="capitalize text-sm">{user.status}</span>
+                    </div>
+                </CardContent>
+              </Card>
             ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-      <CardFooter>
-        <div className="text-xs text-muted-foreground">
-          Showing <strong>1-4</strong> of <strong>{users.length}</strong> users
-        </div>
-      </CardFooter>
-    </Card>
+      </div>
+      <div className="text-xs text-muted-foreground text-center">
+        Showing <strong>1-{users.length}</strong> of <strong>{users.length}</strong> users
+      </div>
+    </div>
   );
 }

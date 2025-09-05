@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MoreVertical, Truck, Package, Tag, DollarSign, QrCode } from "lucide-react";
+import { MoreVertical, Truck, Package, Tag, DollarSign, QrCode, FileText, User, ShoppingCart, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,14 +16,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { StockPredictor } from "@/components/stock-predictor";
 
 const item = {
@@ -70,6 +62,19 @@ const stockHistoryForAI = [
   { date: '2024-05-13', stockLevel: 25, sales: 10 },
   { date: '2024-05-14', stockLevel: 15, sales: 0 },
 ];
+
+const getActionIcon = (action: string) => {
+    switch (action) {
+        case 'Stock Added':
+            return <Package className="h-4 w-4 text-green-500" />;
+        case 'Sale':
+            return <ShoppingCart className="h-4 w-4 text-blue-500" />;
+        case 'Inventory Check':
+            return <FileText className="h-4 w-4 text-gray-500" />;
+        default:
+            return <ArrowRight className="h-4 w-4" />;
+    }
+}
 
 export default function ItemDetailPage({ params }: { params: { id: string } }) {
   // In a real app, you'd fetch the item by params.id
@@ -187,28 +192,26 @@ export default function ItemDetailPage({ params }: { params: { id: string } }) {
           <CardDescription>Recent movements and transactions for this item.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>User</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Details</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <div className="grid gap-4">
               {activityLog.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell>{log.date}</TableCell>
-                  <TableCell>{log.user}</TableCell>
-                  <TableCell><Badge variant="outline">{log.action}</Badge></TableCell>
-                  <TableCell className={log.quantity.startsWith('+') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>{log.quantity}</TableCell>
-                  <TableCell>{log.details}</TableCell>
-                </TableRow>
+                <div key={log.id} className="grid grid-cols-[auto,1fr,auto] items-center gap-4 p-3 rounded-lg bg-muted/50">
+                    <div className="flex items-center justify-center h-10 w-10 rounded-full bg-background">
+                       {getActionIcon(log.action)}
+                    </div>
+                    <div className="grid gap-0.5">
+                        <div className="font-medium flex items-center gap-2">
+                            <span>{log.action}</span>
+                            <Badge variant="outline">{log.user}</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{log.details}</p>
+                        <p className="text-xs text-muted-foreground">{log.date}</p>
+                    </div>
+                    <div className={`text-lg font-semibold ${log.quantity.startsWith('+') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {log.quantity}
+                    </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
         </CardContent>
       </Card>
     </div>
