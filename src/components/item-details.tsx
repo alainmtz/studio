@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StockPredictor } from "@/components/stock-predictor";
-import type { Item } from "@/app/(app)/inventory/page";
+import type { Item } from "@/data/items";
 
 const activityLog = [
   { id: "1", date: "2024-05-10", user: "Admin", action: "Stock Added", quantity: "+50", details: "Initial stock registration" },
