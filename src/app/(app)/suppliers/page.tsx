@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useState } from "react";
 import {
   MoreHorizontal,
   PlusCircle,
@@ -23,6 +27,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const suppliers = [
   { id: "1", name: "FutureTech Dynamics", contactPerson: "Dr. Evelyn Reed", email: "e.reed@futuretech.io", phone: "+1-202-555-0145", itemsSupplied: 12 },
@@ -32,7 +44,10 @@ const suppliers = [
   { id: "5", name: "BioSynth Labs", contactPerson: "Dr. Aris Thorne", email: "aris.t@biosynth.dev", phone: "+1-202-555-0193", itemsSupplied: 21 },
 ];
 
+type Supplier = (typeof suppliers)[0];
+
 export default function SuppliersPage() {
+    const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -100,7 +115,7 @@ export default function SuppliersPage() {
                 <Package className="h-4 w-4" />
                 <span>{supplier.itemsSupplied} items</span>
               </div>
-              <Button variant="outline" size="sm">View Details</Button>
+              <Button variant="outline" size="sm" onClick={() => setSelectedSupplier(supplier)}>View Details</Button>
             </CardFooter>
           </Card>
         ))}
@@ -108,6 +123,57 @@ export default function SuppliersPage() {
       <div className="text-xs text-muted-foreground text-center">
           Showing <strong>1-{suppliers.length}</strong> of <strong>{suppliers.length}</strong> suppliers
       </div>
+
+       {selectedSupplier && (
+        <Dialog
+          open={!!selectedSupplier}
+          onOpenChange={(open) => !open && setSelectedSupplier(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedSupplier.name}</DialogTitle>
+              <DialogDescription>
+                Detailed information for {selectedSupplier.name}.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Contact</p>
+                <p className="col-span-3 font-medium flex items-center gap-2">
+                  <User className="h-4 w-4" /> {selectedSupplier.contactPerson}
+                </p>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Email</p>
+                 <a href={`mailto:${selectedSupplier.email}`} className="col-span-3 hover:underline flex items-center gap-2">
+                    <Mail className="h-4 w-4" /> {selectedSupplier.email}
+                 </a>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Phone</p>
+                <p className="col-span-3 flex items-center gap-2">
+                  <Phone className="h-4 w-4" /> {selectedSupplier.phone}
+                </p>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Items Supplied</p>
+                <p className="col-span-3 flex items-center gap-2">
+                   <Package className="h-4 w-4" /> {selectedSupplier.itemsSupplied}
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+                <Button
+                    variant="outline"
+                    onClick={() => setSelectedSupplier(null)}
+                >
+                    Close
+                </Button>
+                <Button>View Products</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
