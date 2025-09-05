@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -25,14 +26,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -46,37 +39,77 @@ const items = [
 ];
 
 export default function InventoryPage() {
+  const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
+    const filteredItems = filter ? items.filter(item => item.status === filter) : items;
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredItems.map((item) => (
+          <Card key={item.id}>
+            <CardHeader className="p-0">
+              <Link href={`/inventory/${item.id}`}>
+                <Image
+                  alt="Product image"
+                  className="aspect-video w-full rounded-t-lg object-cover"
+                  height="180"
+                  width="320"
+                  src={`https://picsum.photos/seed/${item.sku}/320/180`}
+                  data-ai-hint="product image"
+                />
+              </Link>
+            </CardHeader>
+            <CardContent className="p-4 grid gap-2">
+                <div className="flex items-start justify-between">
+                    <div className="grid gap-0.5">
+                        <Link href={`/inventory/${item.id}`} className="hover:underline">
+                            <CardTitle className="text-base">{item.name}</CardTitle>
+                        </Link>
+                        <CardDescription className="text-xs">{item.sku}</CardDescription>
+                    </div>
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                </div>
+                 <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={`w-fit ${item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}`}>
+                    {item.status.replace('-', ' ')}
+                 </Badge>
+            </CardContent>
+            <CardFooter className="p-4 flex items-center justify-between border-t">
+                <div className="text-lg font-semibold">
+                    ${item.price.toFixed(2)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                    {item.stock} in stock
+                </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <Tabs defaultValue="all">
-      <div className="flex items-center">
-        <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="in-stock">In-stock</TabsTrigger>
-          <TabsTrigger value="low-stock">Low Stock</TabsTrigger>
-          <TabsTrigger value="out-of-stock">Out of stock</TabsTrigger>
-        </TabsList>
-        <div className="ml-auto flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1">
-                <ListFilter className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Filter
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Filter by status</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem checked>
-                In Stock
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>Low Stock</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem>
-                Out of Stock
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Inventory</h1>
+          <p className="text-muted-foreground">Manage your products and view their inventory status.</p>
+        </div>
+        <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" className="h-8 gap-1">
             <File className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -91,91 +124,47 @@ export default function InventoryPage() {
           </Button>
         </div>
       </div>
-      <TabsContent value="all">
-        <Card>
-          <CardHeader>
-            <CardTitle>Inventory</CardTitle>
-            <CardDescription>
-              Manage your products and view their inventory status.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead className="hidden md:table-cell">
-                    Stock
-                  </TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image
-                        alt="Product image"
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        width="64"
-                        src={`https://picsum.photos/seed/${item.sku}/64/64`}
-                        data-ai-hint="product image"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <Link href={`/inventory/${item.id}`} className="hover:underline">
-                        {item.name}
-                      </Link>
-                      <div className="text-sm text-muted-foreground">{item.sku}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}>
-                        {item.status.replace('-', ' ')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>${item.price.toFixed(2)}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {item.stock}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+      <Tabs defaultValue="all">
+        <div className="flex items-center">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="in-stock">In-stock</TabsTrigger>
+            <TabsTrigger value="low-stock">Low Stock</TabsTrigger>
+            <TabsTrigger value="out-of-stock">Out of stock</TabsTrigger>
+          </TabsList>
+           <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 gap-1">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter by Category
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {Array.from(new Set(items.map(i => i.category))).map(cat => (
+                  <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter>
-            <div className="text-xs text-muted-foreground">
-              Showing <strong>1-6</strong> of <strong>{items.length}</strong> products
-            </div>
-          </CardFooter>
-        </Card>
-      </TabsContent>
-    </Tabs>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <TabsContent value="all">
+          {renderItemCards()}
+        </TabsContent>
+        <TabsContent value="in-stock">
+          {renderItemCards("in-stock")}
+        </TabsContent>
+        <TabsContent value="low-stock">
+          {renderItemCards("low-stock")}
+        </TabsContent>
+        <TabsContent value="out-of-stock">
+          {renderItemCards("out-of-stock")}
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
