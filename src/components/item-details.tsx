@@ -1,4 +1,6 @@
 
+"use client";
+
 import Image from "next/image";
 import { MoreVertical, Truck, Package, Tag, DollarSign, QrCode, FileText, User, ShoppingCart, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StockPredictor } from "@/components/stock-predictor";
 import type { Item } from "@/data/items";
+import { useTranslation } from "@/hooks/use-translation";
+
 
 const activityLog = [
   { id: "1", date: "2024-05-10", user: "Admin", action: "Stock Added", quantity: "+50", details: "Initial stock registration" },
@@ -59,12 +63,14 @@ const getActionIcon = (action: string) => {
 }
 
 export function ItemDetails({ item }: { item: Item }) {
+  const { t } = useTranslation();
+
   return (
     <div className="grid gap-6 p-1">
       <div className="flex items-center">
         <h1 className="flex-1 text-2xl font-semibold">{item.name}</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline">Edit</Button>
+          <Button variant="outline">{t('common.edit')}</Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -72,9 +78,9 @@ export function ItemDetails({ item }: { item: Item }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Export as PDF</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600 dark:text-red-500">Delete</DropdownMenuItem>
+              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+              <DropdownMenuItem>{t('itemDetails.exportAsPdf')}</DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600 dark:text-red-500">{t('common.delete')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -115,42 +121,42 @@ export function ItemDetails({ item }: { item: Item }) {
         <div className="md:col-span-2 lg:col-span-1 grid auto-rows-max gap-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Item Details</CardTitle>
+                    <CardTitle>{t('itemDetails.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     <p className="text-sm text-muted-foreground">{item.description}</p>
                     <div className="grid gap-2 text-sm">
                         <div className="flex items-center gap-2">
                             <Package className="h-4 w-4 text-muted-foreground"/>
-                            <span>SKU: {item.sku}</span>
+                            <span>{t('itemDetails.sku')}: {item.sku}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Tag className="h-4 w-4 text-muted-foreground"/>
-                            <span>Category: {item.category}</span>
+                            <span>{t('itemDetails.category')}: {item.category}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-muted-foreground"/>
-                            <span>Price: ${item.price.toFixed(2)}</span>
+                            <span>{t('itemDetails.price')}: ${item.price.toFixed(2)}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Truck className="h-4 w-4 text-muted-foreground"/>
-                            <span>Supplier: {item.supplier.name}</span>
+                            <span>{t('itemDetails.supplier')}: {item.supplier.name}</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span>Status:</span>
+                        <span>{t('itemDetails.status')}:</span>
                         <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}>
-                            {item.status.replace('-', ' ')}
+                             {t(`inventory.status.${item.status.replace('-', '')}` as any)}
                         </Badge>
                     </div>
                     <div className="text-2xl font-bold">
-                        {item.stock} <span className="text-sm font-normal text-muted-foreground">in stock</span>
+                        {item.stock} <span className="text-sm font-normal text-muted-foreground">{t('inventory.inStock')}</span>
                     </div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>QR Code</CardTitle>
+                    <CardTitle>{t('itemDetails.qrCode')}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-center">
                     <Image
@@ -169,8 +175,8 @@ export function ItemDetails({ item }: { item: Item }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Activity Log</CardTitle>
-          <CardDescription>Recent movements and transactions for this item.</CardDescription>
+          <CardTitle>{t('itemDetails.activityLog.title')}</CardTitle>
+          <CardDescription>{t('itemDetails.activityLog.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
@@ -181,7 +187,7 @@ export function ItemDetails({ item }: { item: Item }) {
                     </div>
                     <div className="grid gap-0.5">
                         <div className="font-medium flex items-center gap-2">
-                            <span>{log.action}</span>
+                            <span>{t(`itemDetails.activityLog.actions.${log.action.replace(' ', '')}` as any)}</span>
                             <Badge variant="outline">{log.user}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">{log.details}</p>

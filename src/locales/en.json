@@ -1,0 +1,272 @@
+
+{
+  "common": {
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "export": "Export",
+    "save": "Save",
+    "close": "Close",
+    "toggleMenu": "Toggle menu"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "inventory": "Inventory",
+    "suppliers": "Suppliers",
+    "users": "Users",
+    "reports": "Reports",
+    "store": "Store",
+    "settings": "Settings",
+    "profile": "Profile",
+    "help": "Help & Support"
+  },
+  "languageSwitcher": {
+    "title": "Language",
+    "en": "English",
+    "es": "Spanish"
+  },
+  "userMenu": {
+    "myAccount": "My Account",
+    "profile": "Profile",
+    "billing": "Billing",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "totalValue": "Total Value",
+    "totalValueDesc": "+20.1% from last month",
+    "lowStockItems": "Items Low on Stock",
+    "lowStockItemsDesc": "3 items are out of stock",
+    "totalSales": "Total Sales",
+    "totalSalesDesc": "+19% from last month",
+    "activeSuppliers": "Active Suppliers",
+    "activeSuppliersDesc": "+2 since last hour",
+    "salesOverview": "Sales Overview",
+    "recentTransactions": "Recent Transactions",
+    "recentTransactionsDesc": "You made 265 sales this month.",
+    "transactionStatus": {
+      "fulfilled": "Fulfilled",
+      "processing": "Processing",
+      "shipped": "Shipped"
+    },
+    "dialog": {
+      "order": "Order",
+      "detailsFor": "Details for transaction on",
+      "customer": "Customer",
+      "email": "Email",
+      "amount": "Amount",
+      "status": "Status"
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "description": "Manage your products and view their inventory status.",
+    "addItem": "Add Item",
+    "inStock": "in stock",
+    "filterByCategory": "Filter by Category",
+    "status": {
+      "instock": "In Stock",
+      "lowstock": "Low Stock",
+      "outofstock": "Out of Stock"
+    },
+    "tabs": {
+      "all": "All",
+      "inStock": "In-stock",
+      "lowStock": "Low Stock",
+      "outOfStock": "Out of stock"
+    }
+  },
+  "addItemForm": {
+    "title": "Add New Item",
+    "description": "Fill out the form below to add a new product to your inventory.",
+    "productName": {
+      "label": "Product Name",
+      "placeholder": "e.g., Laser-Guided Widget"
+    },
+    "sku": {
+      "label": "SKU (Stock Keeping Unit)",
+      "placeholder": "e.g., LGW-001"
+    },
+    "descriptionField": {
+      "label": "Description",
+      "placeholder": "Tell us a little bit about the product"
+    },
+    "price": {
+      "label": "Price",
+      "placeholder": "e.g., 49.99"
+    },
+    "stock": {
+      "label": "Stock Quantity",
+      "placeholder": "e.g., 120"
+    },
+    "category": {
+      "label": "Category",
+      "placeholder": "e.g., Widgets"
+    },
+    "supplier": {
+      "label": "Supplier",
+      "placeholder": "Select a supplier"
+    },
+    "status": {
+      "label": "Status",
+      "placeholder": "Select a status"
+    },
+    "imageUrl": {
+      "label": "Image URL",
+      "placeholder": "https://picsum.photos/seed/..."
+    },
+    "submitButton": "Add Item",
+    "toast": {
+      "title": "Item Added",
+      "description": "The item \"{name}\" has been successfully added."
+    }
+  },
+  "itemDetails": {
+    "title": "Item Details",
+    "exportAsPdf": "Export as PDF",
+    "sku": "SKU",
+    "category": "Category",
+    "price": "Price",
+    "supplier": "Supplier",
+    "status": "Status",
+    "qrCode": "QR Code",
+    "activityLog": {
+      "title": "Activity Log",
+      "description": "Recent movements and transactions for this item.",
+      "actions": {
+        "StockAdded": "Stock Added",
+        "Sale": "Sale",
+        "InventoryCheck": "Inventory Check"
+      }
+    }
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "description": "Manage your suppliers and their contact information.",
+    "addSupplier": "Add Supplier",
+    "viewProducts": "View Products",
+    "items": "items",
+    "viewDetails": "View Details",
+    "showing": "Showing <strong>{start}-{end}</strong> of <strong>{total}</strong> suppliers",
+    "dialog": {
+      "description": "Detailed information for {name}.",
+      "contact": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "itemsSupplied": "Items Supplied"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "description": "Manage system users and their roles.",
+    "addUser": "Add User",
+    "changeRole": "Change Role",
+    "showing": "Showing <strong>{start}-{end}</strong> of <strong>{total}</strong> users",
+    "roles": {
+      "admin": "Admin",
+      "staff": "Staff"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "description": "Generate and view reports on your inventory.",
+    "comingSoon": "Reporting Feature Coming Soon",
+    "comingSoonDescription": "Detailed reports on inventory levels, movements, and history will be available here."
+  },
+  "store": {
+    "title": "Store",
+    "description": "A public-facing store for sales, with cart and warranty management.",
+    "underDevelopment": "Storefront Under Development",
+    "underDevelopmentDescription": "Your integrated shop for sales, tickets, and warranties is being built."
+  },
+  "settings": {
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the look and feel of the application.",
+      "theme": "Theme"
+    },
+    "database": {
+      "title": "Database",
+      "description": "Configure the connection to your database.",
+      "host": "Host",
+      "port": "Port",
+      "username": "Username",
+      "password": "Password",
+      "testConnection": "Test Connection"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your account settings and profile information.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us a little bit about yourself"
+  },
+  "projects": {
+    "title": "Projects",
+    "description": "Manage your electronic projects and associated stock items.",
+    "noProjects": "No Projects Yet",
+    "noProjectsDescription": "The projects section is under construction. Soon you'll be able to manage multi-user projects here."
+  },
+  "login": {
+    "title": "Login",
+    "description": "Enter your email below to login to your account.",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot your password?",
+    "loginButton": "Login",
+    "loginWithGoogle": "Login with Google",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign up"
+  },
+  "signup": {
+    "title": "Sign Up",
+    "description": "Enter your information to create an account.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "password": "Password",
+    "createAccountButton": "Create an account",
+    "signUpWithGoogle": "Sign up with Google",
+    "haveAccount": "Already have an account?",
+    "logInLink": "Log in"
+  },
+  "stockPredictor": {
+    "title": "AI Stock-Out Predictor",
+    "description": "Predict when this item will run out of stock based on historical sales data.",
+    "leadTime": {
+      "label": "Replenishment Lead Time (Days)",
+      "placeholder": "e.g., 7"
+    },
+    "salesTrend": {
+      "label": "Sales Trend Window (Days)",
+      "placeholder": "e.g., 14"
+    },
+    "predictButton": "Predict Stock-Out Date",
+    "predictingButton": "Predicting...",
+    "predictionResult": {
+      "title": "Prediction Result",
+      "outOfStockDate": "Predicted Out-of-Stock Date",
+      "reasoning": "Reasoning",
+      "confidenceLevel": "Confidence Level"
+    },
+    "toast": {
+      "title": "Prediction Failed",
+      "description": "Could not generate stock prediction. Please check the data and try again."
+    }
+  },
+  "export": {
+    "title": "Export Inventory",
+    "print": "Print",
+    "name": "Name",
+    "price": "Price",
+    "qrCode": "QR Code",
+    "generatedOn": "Generated on"
+  }
+}

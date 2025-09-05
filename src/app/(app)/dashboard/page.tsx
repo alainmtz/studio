@@ -36,6 +36,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useTranslation } from "@/hooks/use-translation";
 
 const generateSalesData = () => [
   { name: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
@@ -101,6 +102,7 @@ export default function DashboardPage() {
   const [salesData, setSalesData] = useState<any[]>([]);
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setSalesData(generateSalesData());
@@ -115,53 +117,53 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.totalValue')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$45,231.89</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              {t('dashboard.totalValueDesc')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Items Low on Stock
+              {t('dashboard.lowStockItems')}
             </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+12</div>
             <p className="text-xs text-muted-foreground">
-              3 items are out of stock
+              {t('dashboard.lowStockItemsDesc')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.totalSales')}</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+12,234</div>
             <p className="text-xs text-muted-foreground">
-              +19% from last month
+              {t('dashboard.totalSalesDesc')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Active Suppliers
+              {t('dashboard.activeSuppliers')}
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">+57</div>
             <p className="text-xs text-muted-foreground">
-              +2 since last hour
+              {t('dashboard.activeSuppliersDesc')}
             </p>
           </CardContent>
         </Card>
@@ -169,7 +171,7 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Sales Overview</CardTitle>
+          <CardTitle>{t('dashboard.salesOverview')}</CardTitle>
         </CardHeader>
         <CardContent className="pl-2">
           <ResponsiveContainer width="100%" height={350}>
@@ -208,8 +210,8 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Recent Transactions</h2>
-            <p className="text-muted-foreground">You made 265 sales this month.</p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('dashboard.recentTransactions')}</h2>
+            <p className="text-muted-foreground">{t('dashboard.recentTransactionsDesc')}</p>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -233,7 +235,7 @@ export default function DashboardPage() {
                         : "outline"
                     }
                   >
-                    {transaction.status}
+                    {t(`dashboard.transactionStatus.${transaction.status.toLowerCase()}` as any)}
                   </Badge>
               </CardHeader>
               <CardContent>
@@ -254,30 +256,30 @@ export default function DashboardPage() {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Order {selectedTransaction.order}</DialogTitle>
+              <DialogTitle>{t('dashboard.dialog.order')} {selectedTransaction.order}</DialogTitle>
               <DialogDescription>
-                Details for transaction on {selectedTransaction.date}
+                {t('dashboard.dialog.detailsFor')} {selectedTransaction.date}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Customer</p>
+                <p className="text-right text-muted-foreground">{t('dashboard.dialog.customer')}</p>
                 <p className="col-span-3 font-medium">
                   {selectedTransaction.customer}
                 </p>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Email</p>
+                <p className="text-right text-muted-foreground">{t('dashboard.dialog.email')}</p>
                 <p className="col-span-3">{selectedTransaction.email}</p>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Amount</p>
+                <p className="text-right text-muted-foreground">{t('dashboard.dialog.amount')}</p>
                 <p className="col-span-3 font-bold">
                   ${selectedTransaction.amount}
                 </p>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Status</p>
+                <p className="text-right text-muted-foreground">{t('dashboard.dialog.status')}</p>
                 <div className="col-span-3">
                   <Badge
                     variant={
@@ -288,7 +290,7 @@ export default function DashboardPage() {
                         : "outline"
                     }
                   >
-                    {selectedTransaction.status}
+                     {t(`dashboard.transactionStatus.${selectedTransaction.status.toLowerCase()}` as any)}
                   </Badge>
                 </div>
               </div>
@@ -298,7 +300,7 @@ export default function DashboardPage() {
                 variant="outline"
                 onClick={() => setSelectedTransaction(null)}
               >
-                Close
+                {t('common.close')}
               </Button>
             </DialogFooter>
           </DialogContent>

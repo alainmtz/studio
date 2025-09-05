@@ -1,0 +1,272 @@
+
+{
+  "common": {
+    "actions": "Acciones",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "export": "Exportar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "toggleMenu": "Alternar menú"
+  },
+  "sidebar": {
+    "dashboard": "Panel",
+    "inventory": "Inventario",
+    "suppliers": "Proveedores",
+    "users": "Usuarios",
+    "reports": "Reportes",
+    "store": "Tienda",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "help": "Ayuda y Soporte"
+  },
+  "languageSwitcher": {
+    "title": "Idioma",
+    "en": "Inglés",
+    "es": "Español"
+  },
+  "userMenu": {
+    "myAccount": "Mi Cuenta",
+    "profile": "Perfil",
+    "billing": "Facturación",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión"
+  },
+  "dashboard": {
+    "totalValue": "Valor Total",
+    "totalValueDesc": "+20.1% desde el mes pasado",
+    "lowStockItems": "Artículos con Poco Stock",
+    "lowStockItemsDesc": "3 artículos están agotados",
+    "totalSales": "Ventas Totales",
+    "totalSalesDesc": "+19% desde el mes pasado",
+    "activeSuppliers": "Proveedores Activos",
+    "activeSuppliersDesc": "+2 desde la última hora",
+    "salesOverview": "Resumen de Ventas",
+    "recentTransactions": "Transacciones Recientes",
+    "recentTransactionsDesc": "Realizaste 265 ventas este mes.",
+    "transactionStatus": {
+      "fulfilled": "Completado",
+      "processing": "Procesando",
+      "shipped": "Enviado"
+    },
+    "dialog": {
+      "order": "Pedido",
+      "detailsFor": "Detalles de la transacción del",
+      "customer": "Cliente",
+      "email": "Correo electrónico",
+      "amount": "Monto",
+      "status": "Estado"
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "description": "Gestiona tus productos y visualiza el estado de su inventario.",
+    "addItem": "Añadir Artículo",
+    "inStock": "en stock",
+    "filterByCategory": "Filtrar por Categoría",
+    "status": {
+      "instock": "En Stock",
+      "lowstock": "Poco Stock",
+      "outofstock": "Agotado"
+    },
+    "tabs": {
+      "all": "Todos",
+      "inStock": "En Stock",
+      "lowStock": "Poco Stock",
+      "outOfStock": "Agotado"
+    }
+  },
+  "addItemForm": {
+    "title": "Añadir Nuevo Artículo",
+    "description": "Completa el formulario a continuación para añadir un nuevo producto a tu inventario.",
+    "productName": {
+      "label": "Nombre del Producto",
+      "placeholder": "Ej., Widget con guía láser"
+    },
+    "sku": {
+      "label": "SKU (Unidad de Mantenimiento de Stock)",
+      "placeholder": "Ej., LGW-001"
+    },
+    "descriptionField": {
+      "label": "Descripción",
+      "placeholder": "Cuéntanos un poco sobre el producto"
+    },
+    "price": {
+      "label": "Precio",
+      "placeholder": "Ej., 49.99"
+    },
+    "stock": {
+      "label": "Cantidad en Stock",
+      "placeholder": "Ej., 120"
+    },
+    "category": {
+      "label": "Categoría",
+      "placeholder": "Ej., Widgets"
+    },
+    "supplier": {
+      "label": "Proveedor",
+      "placeholder": "Selecciona un proveedor"
+    },
+    "status": {
+      "label": "Estado",
+      "placeholder": "Selecciona un estado"
+    },
+    "imageUrl": {
+      "label": "URL de la Imagen",
+      "placeholder": "https://picsum.photos/seed/..."
+    },
+    "submitButton": "Añadir Artículo",
+    "toast": {
+      "title": "Artículo Añadido",
+      "description": "El artículo \"{name}\" ha sido añadido exitosamente."
+    }
+  },
+  "itemDetails": {
+    "title": "Detalles del Artículo",
+    "exportAsPdf": "Exportar como PDF",
+    "sku": "SKU",
+    "category": "Categoría",
+    "price": "Precio",
+    "supplier": "Proveedor",
+    "status": "Estado",
+    "qrCode": "Código QR",
+    "activityLog": {
+      "title": "Registro de Actividad",
+      "description": "Movimientos y transacciones recientes para este artículo.",
+      "actions": {
+        "StockAdded": "Stock Añadido",
+        "Sale": "Venta",
+        "InventoryCheck": "Revisión de Inventario"
+      }
+    }
+  },
+  "suppliers": {
+    "title": "Proveedores",
+    "description": "Gestiona tus proveedores y su información de contacto.",
+    "addSupplier": "Añadir Proveedor",
+    "viewProducts": "Ver Productos",
+    "items": "artículos",
+    "viewDetails": "Ver Detalles",
+    "showing": "Mostrando <strong>{start}-{end}</strong> de <strong>{total}</strong> proveedores",
+    "dialog": {
+      "description": "Información detallada para {name}.",
+      "contact": "Contacto",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "itemsSupplied": "Artículos Suministrados"
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "description": "Gestiona los usuarios del sistema y sus roles.",
+    "addUser": "Añadir Usuario",
+    "changeRole": "Cambiar Rol",
+    "showing": "Mostrando <strong>{start}-{end}</strong> de <strong>{total}</strong> usuarios",
+    "roles": {
+      "admin": "Administrador",
+      "staff": "Personal"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+  "reports": {
+    "title": "Reportes",
+    "description": "Genera y visualiza reportes de tu inventario.",
+    "comingSoon": "Función de Reportes Próximamente",
+    "comingSoonDescription": "Reportes detallados sobre niveles de inventario, movimientos e historial estarán disponibles aquí."
+  },
+  "store": {
+    "title": "Tienda",
+    "description": "Una tienda pública para ventas, con carrito y gestión de garantías.",
+    "underDevelopment": "Tienda en Desarrollo",
+    "underDevelopmentDescription": "Tu tienda integrada para ventas, tickets y garantías está en construcción."
+  },
+  "settings": {
+    "appearance": {
+      "title": "Apariencia",
+      "description": "Personaliza la apariencia de la aplicación.",
+      "theme": "Tema"
+    },
+    "database": {
+      "title": "Base de Datos",
+      "description": "Configura la conexión a tu base de datos.",
+      "host": "Host",
+      "port": "Puerto",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "testConnection": "Probar Conexión"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "description": "Gestiona la configuración de tu cuenta y la información de tu perfil.",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "bio": "Biografía",
+    "bioPlaceholder": "Cuéntanos un poco sobre ti"
+  },
+  "projects": {
+    "title": "Proyectos",
+    "description": "Gestiona tus proyectos electrónicos y los artículos de stock asociados.",
+    "noProjects": "Aún no hay Proyectos",
+    "noProjectsDescription": "La sección de proyectos está en construcción. Pronto podrás gestionar proyectos multiusuario aquí."
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "description": "Ingresa tu correo electrónico a continuación para iniciar sesión en tu cuenta.",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "loginButton": "Iniciar Sesión",
+    "loginWithGoogle": "Iniciar Sesión con Google",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUpLink": "Regístrate"
+  },
+  "signup": {
+    "title": "Registrarse",
+    "description": "Ingresa tu información para crear una cuenta.",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "createAccountButton": "Crear una cuenta",
+    "signUpWithGoogle": "Registrarse con Google",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "logInLink": "Iniciar Sesión"
+  },
+  "stockPredictor": {
+    "title": "Predictor de Agotamiento de Stock con IA",
+    "description": "Predice cuándo se agotará este artículo basándose en datos históricos de ventas.",
+    "leadTime": {
+      "label": "Tiempo de Entrega para Reposición (Días)",
+      "placeholder": "Ej., 7"
+    },
+    "salesTrend": {
+      "label": "Ventana de Tendencia de Ventas (Días)",
+      "placeholder": "Ej., 14"
+    },
+    "predictButton": "Predecir Fecha de Agotamiento",
+    "predictingButton": "Prediciendo...",
+    "predictionResult": {
+      "title": "Resultado de la Predicción",
+      "outOfStockDate": "Fecha de Agotamiento Prevista",
+      "reasoning": "Razonamiento",
+      "confidenceLevel": "Nivel de Confianza"
+    },
+    "toast": {
+      "title": "Falló la Predicción",
+      "description": "No se pudo generar la predicción de stock. Por favor, revisa los datos e inténtalo de nuevo."
+    }
+  },
+  "export": {
+    "title": "Exportar Inventario",
+    "print": "Imprimir",
+    "name": "Nombre",
+    "price": "Precio",
+    "qrCode": "Código QR",
+    "generatedOn": "Generado el"
+  }
+}

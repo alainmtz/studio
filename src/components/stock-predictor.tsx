@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -22,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BrainCircuit, TrendingUp, AlertCircle, CalendarOff } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 const formSchema = z.object({
   leadTimeDays: z.coerce
@@ -44,6 +46,8 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
     null
   );
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,9 +71,8 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
       console.error(error);
       toast({
         variant: "destructive",
-        title: "Prediction Failed",
-        description:
-          "Could not generate stock prediction. Please check the data and try again.",
+        title: t('stockPredictor.toast.title'),
+        description: t('stockPredictor.toast.description'),
       });
     } finally {
       setIsLoading(false);
@@ -81,10 +84,10 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BrainCircuit className="h-6 w-6 text-primary" />
-          AI Stock-Out Predictor
+          {t('stockPredictor.title')}
         </CardTitle>
         <CardDescription>
-            Predict when this item will run out of stock based on historical sales data.
+            {t('stockPredictor.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
@@ -95,9 +98,9 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
               name="leadTimeDays"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Replenishment Lead Time (Days)</FormLabel>
+                  <FormLabel>{t('stockPredictor.leadTime.label')}</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g., 7" {...field} />
+                    <Input type="number" placeholder={t('stockPredictor.leadTime.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,16 +111,16 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
               name="movingAverageWindow"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sales Trend Window (Days)</FormLabel>
+                  <FormLabel>{t('stockPredictor.salesTrend.label')}</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="e.g., 14" {...field} />
+                    <Input type="number" placeholder={t('stockPredictor.salesTrend.placeholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              {isLoading ? "Predicting..." : "Predict Stock-Out Date"}
+              {isLoading ? t('stockPredictor.predictingButton') : t('stockPredictor.predictButton')}
             </Button>
           </form>
         </Form>
@@ -126,26 +129,26 @@ export function StockPredictor({ itemHistory }: { itemHistory: StockHistory[] })
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-lg">
                         <TrendingUp className="h-5 w-5"/>
-                        Prediction Result
+                        {t('stockPredictor.predictionResult.title')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4">
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-background border">
                         <CalendarOff className="h-8 w-8 text-primary mt-1"/>
                         <div>
-                            <p className="text-sm text-muted-foreground">Predicted Out-of-Stock Date</p>
+                            <p className="text-sm text-muted-foreground">{t('stockPredictor.predictionResult.outOfStockDate')}</p>
                             <p className="text-xl font-bold">{new Date(prediction.predictedOutOfStockDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                         </div>
                     </div>
                      <div className="flex items-start gap-4 p-4 rounded-lg bg-background border">
                         <AlertCircle className="h-8 w-8 text-primary mt-1"/>
                         <div>
-                            <p className="text-sm text-muted-foreground">Reasoning</p>
+                            <p className="text-sm text-muted-foreground">{t('stockPredictor.predictionResult.reasoning')}</p>
                             <p className="text-sm">{prediction.reasoning}</p>
                         </div>
                     </div>
                     <div>
-                        <p className="text-sm text-muted-foreground">Confidence Level</p>
+                        <p className="text-sm text-muted-foreground">{t('stockPredictor.predictionResult.confidenceLevel')}</p>
                         <div className="flex items-center gap-2">
                              <div className="w-full bg-muted rounded-full h-2.5">
                                 <div className="bg-primary h-2.5 rounded-full" style={{ width: `${prediction.confidenceLevel * 100}%` }}></div>

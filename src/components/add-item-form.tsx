@@ -26,6 +26,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { suppliers } from "@/data/suppliers";
+import { useTranslation } from "@/hooks/use-translation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -53,6 +54,8 @@ const formSchema = z.object({
 
 export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   const { toast } = useToast();
+  const { t } = useTranslation();
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,8 +75,8 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("New item added:", values);
     toast({
-      title: "Item Added",
-      description: `The item "${values.name}" has been successfully added.`,
+      title: t('addItemForm.toast.title'),
+      description: t('addItemForm.toast.description', { name: values.name }),
     });
     onFormSubmit();
   }
@@ -87,9 +90,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="name"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Product Name</FormLabel>
+                <FormLabel>{t('addItemForm.productName.label')}</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Laser-Guided Widget" {...field} />
+                    <Input placeholder={t('addItemForm.productName.placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -100,9 +103,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="sku"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>SKU (Stock Keeping Unit)</FormLabel>
+                <FormLabel>{t('addItemForm.sku.label')}</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., LGW-001" {...field} />
+                    <Input placeholder={t('addItemForm.sku.placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -114,10 +117,10 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t('addItemForm.descriptionField.label')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell us a little bit about the product"
+                  placeholder={t('addItemForm.descriptionField.placeholder')}
                   {...field}
                 />
               </FormControl>
@@ -131,9 +134,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="price"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>{t('addItemForm.price.label')}</FormLabel>
                 <FormControl>
-                    <Input type="number" placeholder="e.g., 49.99" {...field} />
+                    <Input type="number" placeholder={t('addItemForm.price.placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -144,9 +147,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="stock"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Stock Quantity</FormLabel>
+                <FormLabel>{t('addItemForm.stock.label')}</FormLabel>
                 <FormControl>
-                    <Input type="number" placeholder="e.g., 120" {...field} />
+                    <Input type="number" placeholder={t('addItemForm.stock.placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -159,9 +162,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="category"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{t('addItemForm.category.label')}</FormLabel>
                 <FormControl>
-                    <Input placeholder="e.g., Widgets" {...field} />
+                    <Input placeholder={t('addItemForm.category.placeholder')} {...field} />
                 </FormControl>
                 <FormMessage />
                 </FormItem>
@@ -172,11 +175,11 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="supplierId"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Supplier</FormLabel>
+                <FormLabel>{t('addItemForm.supplier.label')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select a supplier" />
+                        <SelectValue placeholder={t('addItemForm.supplier.placeholder')} />
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -198,17 +201,17 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             name="status"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t('addItemForm.status.label')}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                     <SelectTrigger>
-                        <SelectValue placeholder="Select a status" />
+                        <SelectValue placeholder={t('addItemForm.status.placeholder')} />
                     </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                        <SelectItem value="in-stock">In Stock</SelectItem>
-                        <SelectItem value="low-stock">Low Stock</SelectItem>
-                        <SelectItem value="out-of-stock">Out of Stock</SelectItem>
+                        <SelectItem value="in-stock">{t('inventory.status.instock')}</SelectItem>
+                        <SelectItem value="low-stock">{t('inventory.status.lowstock')}</SelectItem>
+                        <SelectItem value="out-of-stock">{t('inventory.status.outofstock')}</SelectItem>
                     </SelectContent>
                 </Select>
                 <FormMessage />
@@ -220,9 +223,9 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
                 name="imageUrl"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel>Image URL</FormLabel>
+                    <FormLabel>{t('addItemForm.imageUrl.label')}</FormLabel>
                     <FormControl>
-                        <Input placeholder="https://picsum.photos/seed/..." {...field} />
+                        <Input placeholder={t('addItemForm.imageUrl.placeholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -230,7 +233,7 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             />
         </div>
         <div className="flex justify-end pt-4">
-             <Button type="submit">Add Item</Button>
+             <Button type="submit">{t('addItemForm.submitButton')}</Button>
         </div>
       </form>
     </Form>

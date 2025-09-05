@@ -35,10 +35,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ItemDetails } from "@/components/item-details";
 import { AddItemForm } from "@/components/add-item-form";
 import { items, type Item } from "@/data/items";
+import { useTranslation } from "@/hooks/use-translation";
+
 
 export default function InventoryPage() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
+  const { t } = useTranslation();
 
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
     const filteredItems = filter ? items.filter(item => item.status === filter) : items;
@@ -76,14 +79,14 @@ export default function InventoryPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+                          <DropdownMenuItem>{t('common.edit')}</DropdownMenuItem>
+                          <DropdownMenuItem>{t('common.delete')}</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                 </div>
                  <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={`w-fit ${item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}`}>
-                    {item.status.replace('-', ' ')}
+                    {t(`inventory.status.${item.status.replace('-', '')}` as any)}
                  </Badge>
             </CardContent>
             <CardFooter className="p-4 flex items-center justify-between border-t">
@@ -91,7 +94,7 @@ export default function InventoryPage() {
                     ${item.price.toFixed(2)}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                    {item.stock} in stock
+                    {item.stock} {t('inventory.inStock')}
                 </div>
             </CardFooter>
           </Card>
@@ -104,22 +107,22 @@ export default function InventoryPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Inventory</h1>
-          <p className="text-muted-foreground">Manage your products and view their inventory status.</p>
+          <h1 className="text-2xl font-semibold">{t('inventory.title')}</h1>
+          <p className="text-muted-foreground">{t('inventory.description')}</p>
         </div>
         <div className="flex items-center gap-2">
            <Button size="sm" variant="outline" className="h-8 gap-1" asChild>
             <Link href="/inventory/export" target="_blank">
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Export
+                {t('common.export')}
               </span>
             </Link>
           </Button>
           <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddItemDialogOpen(true)}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Add Item
+              {t('inventory.addItem')}
             </span>
           </Button>
         </div>
@@ -127,10 +130,10 @@ export default function InventoryPage() {
       <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="in-stock">In-stock</TabsTrigger>
-            <TabsTrigger value="low-stock">Low Stock</TabsTrigger>
-            <TabsTrigger value="out-of-stock">Out of stock</TabsTrigger>
+            <TabsTrigger value="all">{t('inventory.tabs.all')}</TabsTrigger>
+            <TabsTrigger value="in-stock">{t('inventory.tabs.inStock')}</TabsTrigger>
+            <TabsTrigger value="low-stock">{t('inventory.tabs.lowStock')}</TabsTrigger>
+            <TabsTrigger value="out-of-stock">{t('inventory.tabs.outOfStock')}</TabsTrigger>
           </TabsList>
            <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
@@ -138,12 +141,12 @@ export default function InventoryPage() {
                 <Button variant="outline" size="sm" className="h-8 gap-1">
                   <ListFilter className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Filter by Category
+                    {t('inventory.filterByCategory')}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by category</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('inventory.filterByCategory')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Array.from(new Set(items.map(i => i.category))).map(cat => (
                   <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
@@ -175,9 +178,9 @@ export default function InventoryPage() {
        <Dialog open={isAddItemDialogOpen} onOpenChange={setIsAddItemDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Add New Item</DialogTitle>
+            <DialogTitle>{t('addItemForm.title')}</DialogTitle>
             <DialogDescription>
-              Fill out the form below to add a new product to your inventory.
+              {t('addItemForm.description')}
             </DialogDescription>
           </DialogHeader>
           <AddItemForm onFormSubmit={() => setIsAddItemDialogOpen(false)} />
