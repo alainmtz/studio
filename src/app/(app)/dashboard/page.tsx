@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
+import { DollarSign, Package, ShoppingCart, Users, MoreVertical } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -27,6 +27,15 @@ import {
   Tooltip,
 } from "recharts";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const generateSalesData = () => [
   { name: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
@@ -50,6 +59,7 @@ const recentTransactions = [
     email: "olivia.martin@email.com",
     amount: "250.00",
     status: "Fulfilled",
+    date: "2024-05-23",
   },
   {
     order: "ORD002",
@@ -57,6 +67,7 @@ const recentTransactions = [
     email: "jackson.lee@email.com",
     amount: "150.75",
     status: "Processing",
+    date: "2024-05-23",
   },
   {
     order: "ORD003",
@@ -64,6 +75,7 @@ const recentTransactions = [
     email: "isabella.nguyen@email.com",
     amount: "350.00",
     status: "Fulfilled",
+    date: "2024-05-22",
   },
   {
     order: "ORD004",
@@ -71,6 +83,7 @@ const recentTransactions = [
     email: "will@email.com",
     amount: "450.50",
     status: "Shipped",
+    date: "2024-05-21",
   },
   {
     order: "ORD005",
@@ -78,11 +91,16 @@ const recentTransactions = [
     email: "sofia.davis@email.com",
     amount: "550.00",
     status: "Fulfilled",
+    date: "2024-05-20",
   },
 ];
 
+type Transaction = (typeof recentTransactions)[0];
+
 export default function DashboardPage() {
   const [salesData, setSalesData] = useState<any[]>([]);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
 
   useEffect(() => {
     setSalesData(generateSalesData());
@@ -148,92 +166,144 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
-        <Card className="col-span-1 lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Sales Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={salesData}>
-                <XAxis
-                  dataKey="name"
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => `$${value}`}
-                />
-                <Tooltip
-                  cursor={{ fill: "hsl(var(--accent))" }}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--background))",
-                    border: "1px solid hsl(var(--border))",
-                  }}
-                />
-                <Bar
-                  dataKey="total"
-                  fill="hsl(var(--primary))"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <Card className="col-span-1 lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Transactions</CardTitle>
-            <CardDescription>
-              You made 265 sales this month.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentTransactions.map((transaction) => (
-                  <TableRow key={transaction.order}>
-                    <TableCell>
-                      <div className="font-medium">{transaction.customer}</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        {transaction.email}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          transaction.status === "Fulfilled"
-                            ? "default"
-                            : transaction.status === "Processing"
-                              ? "secondary"
-                              : "outline"
-                        }
-                      >
-                        {transaction.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      ${transaction.amount}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Sales Overview</CardTitle>
+        </CardHeader>
+        <CardContent className="pl-2">
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={salesData}>
+              <XAxis
+                dataKey="name"
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="hsl(var(--muted-foreground))"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <Tooltip
+                cursor={{ fill: "hsl(var(--accent))" }}
+                contentStyle={{
+                  backgroundColor: "hsl(var(--background))",
+                  border: "1px solid hsl(var(--border))",
+                }}
+              />
+              <Bar
+                dataKey="total"
+                fill="hsl(var(--primary))"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      <div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Recent Transactions</h2>
+            <p className="text-muted-foreground">You made 265 sales this month.</p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {recentTransactions.map((transaction) => (
+            <Card
+              key={transaction.order}
+              className="cursor-pointer hover:bg-accent transition-colors"
+              onClick={() => setSelectedTransaction(transaction)}
+            >
+              <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                 <div className="flex flex-col">
+                    <CardTitle className="text-base font-medium">{transaction.customer}</CardTitle>
+                    <CardDescription>{transaction.order}</CardDescription>
+                </div>
+                 <Badge
+                    variant={
+                      transaction.status === "Fulfilled"
+                        ? "default"
+                        : transaction.status === "Processing"
+                        ? "secondary"
+                        : "outline"
+                    }
+                  >
+                    {transaction.status}
+                  </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">${transaction.amount}</div>
+                <p className="text-xs text-muted-foreground">
+                  {transaction.date}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
+
+      {selectedTransaction && (
+        <Dialog
+          open={!!selectedTransaction}
+          onOpenChange={(open) => !open && setSelectedTransaction(null)}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Order {selectedTransaction.order}</DialogTitle>
+              <DialogDescription>
+                Details for transaction on {selectedTransaction.date}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Customer</p>
+                <p className="col-span-3 font-medium">
+                  {selectedTransaction.customer}
+                </p>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Email</p>
+                <p className="col-span-3">{selectedTransaction.email}</p>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Amount</p>
+                <p className="col-span-3 font-bold">
+                  ${selectedTransaction.amount}
+                </p>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <p className="text-right text-muted-foreground">Status</p>
+                <div className="col-span-3">
+                  <Badge
+                    variant={
+                      selectedTransaction.status === "Fulfilled"
+                        ? "default"
+                        : selectedTransaction.status === "Processing"
+                        ? "secondary"
+                        : "outline"
+                    }
+                  >
+                    {selectedTransaction.status}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSelectedTransaction(null)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
