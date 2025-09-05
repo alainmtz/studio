@@ -1,4 +1,6 @@
 
+"use client";
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
@@ -15,13 +17,6 @@ const items = [
 export default function ExportPage() {
   return (
     <div className="bg-white text-black p-8 print:p-0">
-        <style jsx global>{`
-            @media print {
-                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                .no-print { display: none; }
-                @page { margin: 0.5in; }
-            }
-        `}</style>
         <div className="flex items-center justify-between mb-8 no-print">
             <h1 className="text-2xl font-bold">Export Inventory</h1>
             <Button onClick={() => window.print()}>Print</Button>

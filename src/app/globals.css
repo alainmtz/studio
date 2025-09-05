@@ -86,3 +86,16 @@ body {
     @apply bg-background text-foreground font-body;
   }
 }
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print {
+    display: none;
+  }
+  @page {
+    margin: 0.5in;
+  }
+}
