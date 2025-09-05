@@ -36,30 +36,33 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { suppliers, type Supplier } from "@/data/suppliers";
+import { useTranslation } from "@/hooks/use-translation";
 
 
 export default function SuppliersPage() {
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+    const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
           <div>
-              <h1 className="text-2xl font-semibold">Suppliers</h1>
+              <h1 className="text-2xl font-semibold">{t('suppliers.title')}</h1>
               <p className="text-muted-foreground">
-                Manage your suppliers and their contact information.
+                {t('suppliers.description')}
               </p>
           </div>
           <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" className="h-8 gap-1">
                   <File className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Export
+                  {t('common.export')}
                   </span>
               </Button>
               <Button size="sm" className="h-8 gap-1">
                   <PlusCircle className="h-3.5 w-3.5" />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Supplier
+                  {t('suppliers.addSupplier')}
                   </span>
               </Button>
           </div>
@@ -80,14 +83,14 @@ export default function SuppliersPage() {
                   <DropdownMenuTrigger asChild>
                     <Button aria-haspopup="true" size="icon" variant="ghost">
                       <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Toggle menu</span>
+                      <span className="sr-only">{t('common.toggleMenu')}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>View Products</DropdownMenuItem>
-                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                    <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+                    <DropdownMenuItem>{t('common.edit')}</DropdownMenuItem>
+                    <DropdownMenuItem>{t('suppliers.viewProducts')}</DropdownMenuItem>
+                    <DropdownMenuItem>{t('common.delete')}</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -105,15 +108,15 @@ export default function SuppliersPage() {
             <CardFooter className="border-t pt-4 flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Package className="h-4 w-4" />
-                <span>{supplier.itemsSupplied} items</span>
+                <span>{supplier.itemsSupplied} {t('suppliers.items')}</span>
               </div>
-              <Button variant="outline" size="sm" onClick={() => setSelectedSupplier(supplier)}>View Details</Button>
+              <Button variant="outline" size="sm" onClick={() => setSelectedSupplier(supplier)}>{t('suppliers.viewDetails')}</Button>
             </CardFooter>
           </Card>
         ))}
       </div>
       <div className="text-xs text-muted-foreground text-center">
-          Showing <strong>1-{suppliers.length}</strong> of <strong>{suppliers.length}</strong> suppliers
+          {t('suppliers.showing', { start: 1, end: suppliers.length, total: suppliers.length })}
       </div>
 
        {selectedSupplier && (
@@ -125,30 +128,30 @@ export default function SuppliersPage() {
             <DialogHeader>
               <DialogTitle>{selectedSupplier.name}</DialogTitle>
               <DialogDescription>
-                Detailed information for {selectedSupplier.name}.
+                {t('suppliers.dialog.description', { name: selectedSupplier.name })}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Contact</p>
+                <p className="text-right text-muted-foreground">{t('suppliers.dialog.contact')}</p>
                 <p className="col-span-3 font-medium flex items-center gap-2">
                   <User className="h-4 w-4" /> {selectedSupplier.contactPerson}
                 </p>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Email</p>
+                <p className="text-right text-muted-foreground">{t('suppliers.dialog.email')}</p>
                  <a href={`mailto:${selectedSupplier.email}`} className="col-span-3 hover:underline flex items-center gap-2">
                     <Mail className="h-4 w-4" /> {selectedSupplier.email}
                  </a>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Phone</p>
+                <p className="text-right text-muted-foreground">{t('suppliers.dialog.phone')}</p>
                 <p className="col-span-3 flex items-center gap-2">
                   <Phone className="h-4 w-4" /> {selectedSupplier.phone}
                 </p>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <p className="text-right text-muted-foreground">Items Supplied</p>
+                <p className="text-right text-muted-foreground">{t('suppliers.dialog.itemsSupplied')}</p>
                 <p className="col-span-3 flex items-center gap-2">
                    <Package className="h-4 w-4" /> {selectedSupplier.itemsSupplied}
                 </p>
@@ -159,9 +162,9 @@ export default function SuppliersPage() {
                     variant="outline"
                     onClick={() => setSelectedSupplier(null)}
                 >
-                    Close
+                    {t('common.close')}
                 </Button>
-                <Button>View Products</Button>
+                <Button>{t('suppliers.viewProducts')}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

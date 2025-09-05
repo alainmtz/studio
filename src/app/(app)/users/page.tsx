@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MoreHorizontal,
   PlusCircle,
@@ -24,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslation } from "@/hooks/use-translation";
 
 const users = [
   { 
@@ -61,26 +64,27 @@ const users = [
 ];
 
 export default function UsersPage() {
+  const { t } = useTranslation();
   return (
      <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">Users</h1>
+            <h1 className="text-2xl font-semibold">{t('users.title')}</h1>
             <p className="text-muted-foreground">
-              Manage system users and their roles.
+              {t('users.description')}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Export
+                {t('common.export')}
               </span>
             </Button>
             <Button size="sm" className="h-8 gap-1">
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add User
+                {t('users.addUser')}
               </span>
             </Button>
           </div>
@@ -107,14 +111,14 @@ export default function UsersPage() {
                             <DropdownMenuTrigger asChild>
                             <Button aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8">
                                 <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
+                                <span className="sr-only">{t('common.toggleMenu')}</span>
                             </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Change Role</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 dark:text-red-500">Delete</DropdownMenuItem>
+                            <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
+                            <DropdownMenuItem>{t('common.edit')}</DropdownMenuItem>
+                            <DropdownMenuItem>{t('users.changeRole')}</DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600 dark:text-red-500">{t('common.delete')}</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -123,19 +127,19 @@ export default function UsersPage() {
                     <div className="flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-muted-foreground" />
                         <Badge variant={user.role === 'admin' ? 'default' : 'outline'}>
-                            {user.role}
+                            {t(`users.roles.${user.role}` as any)}
                         </Badge>
                     </div>
                     <div className="flex items-center gap-2">
                         {user.status === 'active' ? <div className="h-4 w-4 rounded-full bg-green-500" /> : <CircleOff className="h-4 w-4 text-muted-foreground" />}
-                        <span className="capitalize text-sm">{user.status}</span>
+                        <span className="capitalize text-sm">{t(`users.status.${user.status}` as any)}</span>
                     </div>
                 </CardContent>
               </Card>
             ))}
       </div>
       <div className="text-xs text-muted-foreground text-center">
-        Showing <strong>1-{users.length}</strong> of <strong>{users.length}</strong> users
+        {t('users.showing', { start: 1, end: users.length, total: users.length })}
       </div>
     </div>
   );
