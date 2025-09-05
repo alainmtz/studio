@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -25,8 +26,9 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
+import { useState, useEffect } from "react";
 
-const salesData = [
+const generateSalesData = () => [
   { name: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
   { name: "Feb", total: Math.floor(Math.random() * 5000) + 1000 },
   { name: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
@@ -80,6 +82,16 @@ const recentTransactions = [
 ];
 
 export default function DashboardPage() {
+  const [salesData, setSalesData] = useState<any[]>([]);
+
+  useEffect(() => {
+    setSalesData(generateSalesData());
+  }, []);
+
+  if (!salesData.length) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -187,7 +199,7 @@ export default function DashboardPage() {
                 <TableRow>
                   <TableHead>Customer</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -204,12 +216,9 @@ export default function DashboardPage() {
                         variant={
                           transaction.status === "Fulfilled"
                             ? "default"
-                            : "secondary"
-                        }
-                        className={
-                          transaction.status === "Processing"
-                            ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
-                            : transaction.status === "Shipped" ? "bg-blue-500/20 text-blue-600 dark:text-blue-400" : ""
+                            : transaction.status === "Processing"
+                              ? "secondary"
+                              : "outline"
                         }
                       >
                         {transaction.status}
