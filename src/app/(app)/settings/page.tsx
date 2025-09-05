@@ -1,4 +1,5 @@
 
+"use client"
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,13 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function SettingsPage() {
   return (
@@ -31,16 +26,7 @@ export default function SettingsPage() {
           <form className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="theme">Theme</Label>
-              <Select defaultValue="system">
-                <SelectTrigger id="theme" className="w-[280px]">
-                  <SelectValue placeholder="Select theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
-                </SelectContent>
-              </Select>
+              <ThemeToggle />
             </div>
             <div className="flex justify-start">
               <Button>Save</Button>
