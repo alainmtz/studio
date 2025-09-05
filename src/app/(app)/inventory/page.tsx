@@ -1,4 +1,6 @@
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -7,6 +9,7 @@ import {
   File,
   ListFilter,
 } from "lucide-react";
+import { useState } from 'react';
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,25 +31,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ItemDetails } from "@/components/item-details";
 
 const items = [
-  { id: "1", name: "Laser-Guided Widget", sku: "LGW-001", stock: 120, price: 49.99, status: "in-stock", category: "Widgets" },
-  { id: "2", name: "Hyper-Flux Capacitor", sku: "HFC-002", stock: 15, price: 199.99, status: "low-stock", category: "Capacitors" },
-  { id: "3", name: "Quantum Sprocket", sku: "QS-003", stock: 0, price: 99.99, status: "out-of-stock", category: "Sprockets" },
-  { id: "4", name: "Nano-Enhanced Gear", sku: "NEG-004", stock: 75, price: 29.99, status: "in-stock", category: "Gears" },
-  { id: "5", name: "Chrono-Stabilizer Unit", sku: "CSU-005", stock: 30, price: 349.99, status: "in-stock", category: "Stabilizers" },
-  { id: "6", name: "Plasma-Infused Screw", sku: "PIS-006", stock: 8, price: 2.99, status: "low-stock", category: "Fasteners" },
+  { id: "1", name: "Laser-Guided Widget", sku: "LGW-001", stock: 120, price: 49.99, status: "in-stock", category: "Widgets", description: "A high-precision widget with laser guidance for optimal performance.", supplier: { id: "1", name: "FutureTech Dynamics" }, images: [{ url: 'https://picsum.photos/seed/LGW-001/600/600', alt: 'Main view' }] },
+  { id: "2", name: "Hyper-Flux Capacitor", sku: "HFC-002", stock: 15, price: 199.99, status: "low-stock", category: "Capacitors", description: "A state-of-the-art capacitor designed for temporal displacement and high-energy applications. Features a self-regulating energy core and a durable titanium-alloy casing.", supplier: { id: "1", name: "FutureTech Dynamics" }, images: [ { url: 'https://picsum.photos/seed/HFC-002-1/600/600', alt: 'Main view' }, { url: 'https://picsum.photos/seed/HFC-002-2/600/600', alt: 'Side view' }, { url: 'https://picsum.photos/seed/HFC-002-3/600/600', alt: 'In-use' }] },
+  { id: "3", name: "Quantum Sprocket", sku: "QS-003", stock: 0, price: 99.99, status: "out-of-stock", category: "Sprockets", description: "A sprocket that operates on quantum principles, allowing for near-frictionless rotation.", supplier: { id: "2", name: "Quantum Innovations" }, images: [{ url: 'https://picsum.photos/seed/QS-003/600/600', alt: 'Main view' }] },
+  { id: "4", name: "Nano-Enhanced Gear", sku: "NEG-004", stock: 75, price: 29.99, status: "in-stock", category: "Gears", description: "A gear infused with nanobots for self-repair and enhanced durability.", supplier: { id: "4", name: "Apex Machining" }, images: [{ url: 'https://picsum.photos/seed/NEG-004/600/600', alt: 'Main view' }] },
+  { id: "5", name: "Chrono-Stabilizer Unit", sku: "CSU-005", stock: 30, price: 349.99, status: "in-stock", category: "Stabilizers", description: "A device that stabilizes temporal fields, essential for any time-traveling apparatus.", supplier: { id: "1", name: "FutureTech Dynamics" }, images: [{ url: 'https://picsum.photos/seed/CSU-005/600/600', alt: 'Main view' }] },
+  { id: "6", name: "Plasma-Infused Screw", sku: "PIS-006", stock: 8, price: 2.99, status: "low-stock", category: "Fasteners", description: "A screw coated in a thin layer of plasma for superior grip and heat resistance.", supplier: { id: "3", name: "Stellar Components Co." }, images: [{ url: 'https://picsum.photos/seed/PIS-006/600/600', alt: 'Main view' }] },
 ];
 
+export type Item = (typeof items)[0];
+
 export default function InventoryPage() {
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
     const filteredItems = filter ? items.filter(item => item.status === filter) : items;
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredItems.map((item) => (
-          <Card key={item.id}>
+          <Card key={item.id} className="cursor-pointer hover:bg-accent transition-colors" onClick={() => setSelectedItem(item)}>
             <CardHeader className="p-0">
-              <Link href={`/inventory/${item.id}`}>
                 <Image
                   alt="Product image"
                   className="aspect-video w-full rounded-t-lg object-cover"
@@ -55,14 +63,11 @@ export default function InventoryPage() {
                   src={`https://picsum.photos/seed/${item.sku}/320/180`}
                   data-ai-hint="product image"
                 />
-              </Link>
             </CardHeader>
             <CardContent className="p-4 grid gap-2">
                 <div className="flex items-start justify-between">
                     <div className="grid gap-0.5">
-                        <Link href={`/inventory/${item.id}`} className="hover:underline">
-                            <CardTitle className="text-base">{item.name}</CardTitle>
-                        </Link>
+                        <CardTitle className="text-base hover:underline">{item.name}</CardTitle>
                         <CardDescription className="text-xs">{item.sku}</CardDescription>
                     </div>
                      <DropdownMenu>
@@ -72,12 +77,13 @@ export default function InventoryPage() {
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <MoreHorizontal className="h-4 w-4" />
                             <span className="sr-only">Toggle menu</span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem>Edit</DropdownMenuItem>
                           <DropdownMenuItem>Delete</DropdownMenuItem>
@@ -165,6 +171,13 @@ export default function InventoryPage() {
           {renderItemCards("out-of-stock")}
         </TabsContent>
       </Tabs>
+      {selectedItem && (
+        <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <ItemDetails item={selectedItem} />
+            </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

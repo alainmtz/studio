@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { MoreVertical, Truck, Package, Tag, DollarSign, QrCode, FileText, User, ShoppingCart, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -17,26 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { StockPredictor } from "@/components/stock-predictor";
-
-const item = {
-  id: "2",
-  name: "Hyper-Flux Capacitor",
-  sku: "HFC-002",
-  description: "A state-of-the-art capacitor designed for temporal displacement and high-energy applications. Features a self-regulating energy core and a durable titanium-alloy casing.",
-  stock: 15,
-  price: 199.99,
-  status: "low-stock",
-  category: "Capacitors",
-  supplier: {
-    id: "1",
-    name: "FutureTech Dynamics",
-  },
-  images: [
-    { url: 'https://picsum.photos/seed/HFC-002-1/600/600', alt: 'Main view' },
-    { url: 'https://picsum.photos/seed/HFC-002-2/600/600', alt: 'Side view' },
-    { url: 'https://picsum.photos/seed/HFC-002-3/600/600', alt: 'In-use' },
-  ]
-};
+import type { Item } from "@/app/(app)/inventory/page";
 
 const activityLog = [
   { id: "1", date: "2024-05-10", user: "Admin", action: "Stock Added", quantity: "+50", details: "Initial stock registration" },
@@ -76,10 +58,9 @@ const getActionIcon = (action: string) => {
     }
 }
 
-export default function ItemDetailPage({ params }: { params: { id: string } }) {
-  // In a real app, you'd fetch the item by params.id
+export function ItemDetails({ item }: { item: Item }) {
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 p-1">
       <div className="flex items-center">
         <h1 className="flex-1 text-2xl font-semibold">{item.name}</h1>
         <div className="flex items-center gap-2">
