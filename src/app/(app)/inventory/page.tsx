@@ -31,12 +31,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ItemDetails } from "@/components/item-details";
+import { AddItemForm } from "@/components/add-item-form";
 import { items, type Item } from "@/data/items";
 
 export default function InventoryPage() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
 
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
     const filteredItems = filter ? items.filter(item => item.status === filter) : items;
@@ -114,7 +116,7 @@ export default function InventoryPage() {
               </span>
             </Link>
           </Button>
-          <Button size="sm" className="h-8 gap-1">
+          <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddItemDialogOpen(true)}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Add Item
@@ -170,6 +172,17 @@ export default function InventoryPage() {
             </DialogContent>
         </Dialog>
       )}
+       <Dialog open={isAddItemDialogOpen} onOpenChange={setIsAddItemDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Item</DialogTitle>
+            <DialogDescription>
+              Fill out the form below to add a new product to your inventory.
+            </DialogDescription>
+          </DialogHeader>
+          <AddItemForm onFormSubmit={() => setIsAddItemDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
