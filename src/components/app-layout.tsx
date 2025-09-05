@@ -41,7 +41,7 @@ const navItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard", tooltip: "Dashboard" },
   { href: "/inventory", icon: Package, label: "Inventory", tooltip: "Inventory" },
   { href: "/suppliers", icon: Truck, label: "Suppliers", tooltip: "Suppliers" },
-  { href: "/projects", icon: Users, label: "Projects", tooltip: "Projects" },
+  { href: "/users", icon: Users, label: "Users", tooltip: "Users" },
   { href: "/reports", icon: BarChart3, label: "Reports", tooltip: "Reports" },
   { href: "/store", icon: ShoppingCart, label: "Store", tooltip: "Store" },
 ];
@@ -115,41 +115,41 @@ export function AppLayout({ children }: { children: ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-          <SidebarTrigger className="md:hidden" />
-          <div className="flex-1">
-            {/* Breadcrumbs or page title can go here */}
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-9 w-9 rounded-full"
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src="" alt="@user" />
-                  <AvatarFallback>U</AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/profile">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">Settings</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/login">Logout</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </header>
-        <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
-  );
-}
+            <SidebarTrigger className="md:hidden" />
+            <div className="flex-1">
+              {/* Breadcrumbs or page title can go here */}
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-9 w-9 rounded-full"
+                >
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src="" alt="@user" />
+                    <AvatarFallback>U</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>Billing</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings">Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/login">Logout</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
+          <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
