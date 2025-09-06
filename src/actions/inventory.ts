@@ -33,20 +33,32 @@ export async function getInventoryItems(): Promise<Item[]> {
       id: String(row.id),
       name: row.name,
       sku: row.sku,
-      stock: row.quantity,
-      price: row.price,
-      status: row.status,
-      category: row.brand,
-      description: row.description,
+      description: row.description ?? null,
+      price: Number(row.price),
+      cost: row.cost !== undefined ? Number(row.cost) : null,
+      quantity: row.quantity !== undefined ? Number(row.quantity) : 0,
+      brand: row.brand ?? null,
+      model: row.model ?? null,
+      status: row.status ?? null,
       supplier: { id: String(row.supplier_id), name: row.supplierName || 'N/A' },
-      images: [{ url: row.imageUrl || `https://picsum.photos/seed/${row.sku}/600/600`, alt: row.name }]
+      provenance: row.provenance ?? null,
+      warranty_days: row.warranty_days !== undefined ? Number(row.warranty_days) : null,
+      images: [{
+        url: row.imageUrl ? `/uploads/${row.imageUrl}` : `https://picsum.photos/seed/${row.sku}/600/600`,
+        alt: row.name
+      }],
+      stock: row.quantity !== undefined ? Number(row.quantity) : 0,
+      category: row.brand ?? ''
     }));
 
     return items;
 
-  } catch (error) {
-    console.error('Failed to fetch inventory items:', error);
-    throw new Error('A database error occurred while fetching inventory items.');
+  } catch (error: any) {
+    console.error('Failed to fetch inventory items:', error?.message || error);
+    if (error?.sqlMessage) {
+      console.error('SQL Error:', error.sqlMessage);
+    }
+    throw new Error('A database error occurred while fetching inventory items. ' + (error?.message || ''));
   } finally {
     if (connection) {
       try {

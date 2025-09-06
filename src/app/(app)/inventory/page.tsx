@@ -57,11 +57,11 @@ export default function InventoryPage() {
       console.log("Fetched items from DB:", dbItems);
     } catch (error) {
       console.error("Failed to fetch items from DB", error);
-       toast({
-        variant: "destructive",
-        title: "Failed to load inventory",
-        description: "Could not connect to the database or find items. Please check the connection settings and if the 'products' table exists.",
-      });
+         toast({
+          variant: "destructive",
+          title: "Failed to load inventory",
+          description: "Could not connect to the database or find items. Please check the connection settings and if the 'Items' table exists.",
+        });
       setItems([]); // Set to empty array on error
     } finally {
       setIsLoading(false);
