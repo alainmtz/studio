@@ -100,10 +100,19 @@
       "label": "Stock Quantity",
       "placeholder": "e.g., 120"
     },
-    "category": {
+    "inventory": {
       "label": "Category",
       "placeholder": "e.g., Widgets"
     },
+    "search": "Search...",
+    "searchPlaceholder": "Type to search items...",
+    "provenance": "Provenance",
+    "provenancePlaceholder": "Select provenance",
+    "brand": "Brand",
+    "brandPlaceholder": "Select brand",
+      "sortByName": "Sort by Name",
+      "sortByPrice": "Sort by Price",
+      "sortByCost": "Sort by Cost",
     "supplier": {
       "label": "Supplier",
       "placeholder": "Select a supplier"
@@ -249,7 +258,7 @@
       "label": "Sales Trend Window (Days)",
       "placeholder": "e.g., 14"
     },
-    "predictButton": "Predict Stock-Out Date",
+    "predictButton": "Predict",
     "predictingButton": "Predicting...",
     "predictionResult": {
       "title": "Prediction Result",

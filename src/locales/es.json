@@ -100,10 +100,19 @@
       "label": "Cantidad en Stock",
       "placeholder": "Ej., 120"
     },
-    "category": {
+    "inventory": {
       "label": "Categoría",
       "placeholder": "Ej., Widgets"
     },
+    "search": "Buscar...",
+    "searchPlaceholder": "Escribe para buscar artículos...",
+    "provenance": "Procedencia",
+    "provenancePlaceholder": "Selecciona procedencia",
+    "brand": "Marca",
+    "brandPlaceholder": "Selecciona marca",
+      "sortByName": "Ordenar por nombre",
+      "sortByPrice": "Ordenar por precio",
+      "sortByCost": "Ordenar por costo",
     "supplier": {
       "label": "Proveedor",
       "placeholder": "Selecciona un proveedor"
@@ -249,7 +258,7 @@
       "label": "Ventana de Tendencia de Ventas (Días)",
       "placeholder": "Ej., 14"
     },
-    "predictButton": "Predecir Fecha de Agotamiento",
+    "predictButton": "Predecir",
     "predictingButton": "Prediciendo...",
     "predictionResult": {
       "title": "Resultado de la Predicción",

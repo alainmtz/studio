@@ -1,3 +1,8 @@
+// Helper to run queries directly
+export const query = async (sql: string, params?: any[]) => {
+  const pool = getPool();
+  return pool.query(sql, params);
+};
 import mysql from 'mysql2/promise';
 
 // This function creates a connection pool.

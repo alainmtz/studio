@@ -1,6 +1,7 @@
-
 "use client";
-
+import { EditItemForm } from "@/components/edit-item-form";
+import { ItemDetailsDialog } from "@/components/ui/item-details-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,7 +11,6 @@ import {
   ListFilter,
 } from "lucide-react";
 import { useState, useEffect } from 'react';
-
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -34,65 +34,138 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ItemDetails } from "@/components/item-details";
 import { AddItemForm } from "@/components/add-item-form";
-import { items as staticItems, type Item } from "@/data/items"; // Keep static items as fallback/example
+import type { Item } from "@/data/items";
 import { useTranslation } from "@/hooks/use-translation";
 import { getInventoryItems } from "@/actions/inventory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 
 export default function InventoryPage() {
+  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Item | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProvenance, setSelectedProvenance] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'price' | 'cost' | 'name'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const { t } = useTranslation();
   const { toast } = useToast();
-
+  // Fetch items from the database
   const fetchItems = async () => {
     setIsLoading(true);
     try {
-      const dbItems = await getInventoryItems();
-      setItems(dbItems);
-      console.log("Fetched items from DB:", dbItems);
+      const data = await getInventoryItems();
+      setItems(data);
     } catch (error) {
-      console.error("Failed to fetch items from DB", error);
-         toast({
-          variant: "destructive",
-          title: "Failed to load inventory",
-          description: "Could not connect to the database or find items. Please check the connection settings and if the 'Items' table exists.",
-        });
-      setItems([]); // Set to empty array on error
+      console.error('Failed to fetch items:', error);
+      toast({ 
+        variant: 'destructive', 
+        title: t('inventory.fetchErrorTitle'), 
+        description: t('inventory.fetchErrorDescription') 
+      });  
     } finally {
       setIsLoading(false);
     }
+  };
+
+
+   // Handler for delete item
+  const handleDeleteItem = async () => {
+    if (deleteItemId == null) return;
+    // TODO: implement deleteItem action and call here
+    // await deleteItem(deleteItemId);
+    setDeleteItemId(null);
+    fetchItems();
+  };
+  // Handler for edit item form submit
+  const handleEditSubmit = () => {
+    setEditItem(null);
+    fetchItems();
   };
 
   useEffect(() => {
     fetchItems();
   }, []);
 
+  const getFilteredItems = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
+    let filteredItems = filter ? items.filter(item => item.status === filter) : items;
+    if (selectedCategory) {
+      filteredItems = filteredItems.filter(item => item.category === selectedCategory);
+    }
+    if (selectedProvenance) {
+      filteredItems = filteredItems.filter(item => item.provenance === selectedProvenance);
+    }
+    if (selectedBrand) {
+      filteredItems = filteredItems.filter(item => item.brand === selectedBrand);
+    }
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase();
+      filteredItems = filteredItems.filter(item =>
+        item.name.toLowerCase().includes(term) ||
+        item.sku.toLowerCase().includes(term) ||
+        (item.brand && item.brand.toLowerCase().includes(term)) ||
+        (item.provenance && item.provenance.toLowerCase().includes(term))
+      );
+    }
+    filteredItems = [...filteredItems].sort((a, b) => {
+      let valA, valB;
+      if (sortBy === 'price') {
+        valA = a.price;
+        valB = b.price;
+      } else if (sortBy === 'cost') {
+        valA = a.cost ?? 0;
+        valB = b.cost ?? 0;
+      } else {
+        valA = a.name.toLowerCase();
+        valB = b.name.toLowerCase();
+      }
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return filteredItems;
+  };
+
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
-    const filteredItems = filter ? items.filter(item => item.status === filter) : items;
+    const filteredItems = getFilteredItems(filter);
     
     if (isLoading) {
         return (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Card key={i}>
-                <Skeleton className="aspect-video w-full rounded-t-lg" />
-                <CardContent className="p-4 grid gap-2">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-1/4" />
-                  <Skeleton className="h-5 w-1/3" />
-                </CardContent>
-                <CardFooter className="p-4 flex items-center justify-between border-t">
-                  <Skeleton className="h-6 w-1/4" />
-                  <Skeleton className="h-5 w-1/3" />
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
+          <>
+            <ConfirmDialog
+              open={deleteItemId !== null}
+              title={t('inventory.deleteItem')}
+              description={t('inventory.deleteConfirm')}
+              confirmText={t('common.delete')}
+              cancelText={t('common.cancel')}
+              onConfirm={handleDeleteItem}
+              onCancel={() => setDeleteItemId(null)}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="aspect-video w-full rounded-t-lg" />
+                  <CardContent className="p-4 grid gap-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-5 w-1/3" />
+                  </CardContent>
+                  <CardFooter className="p-4 flex items-center justify-between border-t">
+                    <Skeleton className="h-6 w-1/4" />
+                    <Skeleton className="h-5 w-1/3" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </>
         );
     }
 
@@ -135,13 +208,13 @@ export default function InventoryPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                           <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
-                          <DropdownMenuItem>{t('common.edit')}</DropdownMenuItem>
-                          <DropdownMenuItem>{t('common.delete')}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setEditItem(item)}>{t('common.edit')}</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setDeleteItemId(Number(item.id))}>{t('common.delete')}</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                 </div>
                  <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={`w-fit ${item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}`}>
-                    {t(`inventory.status.${item.status.replace('-', '')}` as any, { defaultValue: item.status })}
+                    {t(`inventory.status.${(item.status ?? 'in-stock').replace('-', '')}` as any, { defaultValue: item.status ?? 'in-stock' })}
                  </Badge>
             </CardContent>
             <CardFooter className="p-4 flex items-center justify-between border-t">
@@ -165,15 +238,66 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold">{t('inventory.title')}</h1>
           <p className="text-muted-foreground">{t('inventory.description')}</p>
         </div>
-        <div className="flex items-center gap-2">
-           <Button size="sm" variant="outline" className="h-8 gap-1" asChild>
-            <Link href="/inventory/export" target="_blank">
-              <File className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                {t('common.export')}
-              </span>
-            </Link>
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="text"
+            placeholder={t('inventory.search') || 'Buscar...'}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+            style={{ minWidth: 180 }}
+          />
+          <select
+            value={selectedProvenance || ''}
+            onChange={e => setSelectedProvenance(e.target.value || null)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="">{t('inventory.provenance') || 'Provenance'}</option>
+            {Array.from(new Set(items.map(i => i.provenance).filter(Boolean))).map(prov => (
+              <option key={prov} value={prov || ""}>{prov}</option>
+            ))}
+          </select>
+          <select
+            value={selectedBrand || ''}
+            onChange={e => setSelectedBrand(e.target.value || null)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="">{t('inventory.brand') || 'Brand'}</option>
+            {Array.from(new Set(items.map(i => i.brand).filter(Boolean))).map(brand => (
+              <option key={brand} value={brand || ""}>{brand}</option>
+            ))}
+          </select>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value as any)}
+            className="border rounded px-2 py-1 text-sm"
+          >
+            <option value="name">{t('inventory.sortByName') || 'Sort by Name'}</option>
+            <option value="price">{t('inventory.sortByPrice') || 'Sort by Price'}</option>
+            <option value="cost">{t('inventory.sortByCost') || 'Sort by Cost'}</option>
+          </select>
+          <button
+            type="button"
+            className="border rounded px-2 py-1 text-sm"
+            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+          >
+            {sortOrder === 'asc' ? '↑' : '↓'}
+          </button>
+           <Button
+             size="sm"
+             variant="outline"
+             className="h-8 gap-1"
+             onClick={() => {
+               const filtered = getFilteredItems(activeTab as any);
+               localStorage.setItem('exportItems', JSON.stringify(filtered));
+               window.open('/inventory/export', '_blank');
+             }}
+           >
+             <File className="h-3.5 w-3.5" />
+             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+               {t('common.export')}
+             </span>
+           </Button>
           <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddItemDialogOpen(true)}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -182,7 +306,16 @@ export default function InventoryPage() {
           </Button>
         </div>
       </div>
-      <Tabs defaultValue="all">
+      <ConfirmDialog
+        open={deleteItemId !== null}
+        title={t('inventory.deleteItem')}
+        description={t('inventory.deleteConfirm')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        onConfirm={handleDeleteItem}
+        onCancel={() => setDeleteItemId(null)}
+      />
+  <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center">
           <TabsList>
             <TabsTrigger value="all">{t('inventory.tabs.all')}</TabsTrigger>
@@ -204,7 +337,13 @@ export default function InventoryPage() {
                 <DropdownMenuLabel>{t('inventory.filterByCategory')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Array.from(new Set(items.map(i => i.category))).map(cat => (
-                  <DropdownMenuCheckboxItem key={cat}>{cat}</DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    key={cat}
+                    checked={selectedCategory === cat}
+                    onCheckedChange={(checked) => setSelectedCategory(checked ? cat : null)}
+                  >
+                    {cat}
+                  </DropdownMenuCheckboxItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -223,28 +362,25 @@ export default function InventoryPage() {
           {renderItemCards("out-of-stock")}
         </TabsContent>
       </Tabs>
-      {selectedItem && (
-        <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <ItemDetails item={selectedItem} />
-            </DialogContent>
-        </Dialog>
-      )}
-       <Dialog open={isAddItemDialogOpen} onOpenChange={setIsAddItemDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{t('addItemForm.title')}</DialogTitle>
-            <DialogDescription>
-              {t('addItemForm.description')}
-            </DialogDescription>
-          </DialogHeader>
-          <AddItemForm onFormSubmit={() => {
-            setIsAddItemDialogOpen(false);
-            // Refresh items list
-             fetchItems();
-          }} />
-        </DialogContent>
-      </Dialog>
+      <ItemDetailsDialog
+        open={!!selectedItem}
+        item={selectedItem}
+        onClose={() => setSelectedItem(null)}
+      />
+      <EditItemForm
+        open={!!editItem}
+        item={editItem}
+        onFormSubmit={handleEditSubmit}
+        onCancel={() => setEditItem(null)}
+      />
+      <AddItemForm
+        open={isAddItemDialogOpen}
+        onFormSubmit={() => {
+          setIsAddItemDialogOpen(false);
+          fetchItems();
+        }}
+        onCancel={() => setIsAddItemDialogOpen(false)}
+      />
     </div>
   );
 }

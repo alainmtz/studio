@@ -1,4 +1,209 @@
 'use server';
+export async function deleteSupplier(id: number): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute('DELETE FROM suppliers WHERE id = ?', [id]);
+  } catch (error) {
+    console.error('Failed to delete supplier:', error);
+    throw new Error('Could not delete the supplier from the database.');
+  } finally {
+    if (connection) {
+      try {
+        await connection.release();
+      } catch (releaseError) {
+        console.error('Error releasing database connection:', releaseError);
+      }
+    }
+  }
+}
+
+export async function deleteItem(id: number): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute('DELETE FROM Items WHERE id = ?', [id]);
+  } catch (error) {
+    console.error('Failed to delete item:', error);
+    throw new Error('Could not delete the item from the database.');
+  } finally {
+    if (connection) {
+      try {
+        await connection.release();
+      } catch (releaseError) {
+        console.error('Error releasing database connection:', releaseError);
+      }
+    }
+  }
+}
+/**
+ * Update only the image_url for an item by id
+ */
+export async function updateItemImageUrl(id: number, imageUrl: string): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute(
+      'UPDATE Items SET image_url = ? WHERE id = ?',
+      [imageUrl, id]
+    );
+  } catch (error) {
+    console.error('Failed to update item image URL:', error);
+    throw new Error('Could not update the item image URL in the database.');
+  } finally {
+    if (connection) {
+      try {
+        await connection.release();
+      } catch (releaseError) {
+        console.error('Error releasing database connection:', releaseError);
+      }
+    }
+  }
+}
+
+// --- Stock History ---
+export type StockHistoryEntry = {
+  id: string;
+  itemId: string;
+  date: string;
+  stockLevel: number;
+  sales: number;
+};
+
+export async function getStockHistory(itemId: string): Promise<StockHistoryEntry[]> {
+  let connection;
+  try {
+    connection = await getConnection();
+    const [rows] = await connection.execute(
+      `SELECT id, item_id as itemId, date, stock_level as stockLevel, sales FROM stock_history WHERE item_id = ? ORDER BY date ASC`,
+      [itemId]
+    );
+    return (rows as any[]).map(row => ({
+      id: String(row.id),
+      itemId: String(row.itemId),
+      date: row.date,
+      stockLevel: Number(row.stockLevel),
+      sales: Number(row.sales)
+    }));
+  } finally {
+    if (connection) await connection.release();
+  }
+}
+
+export async function addStockHistory(entry: Omit<StockHistoryEntry, 'id'>): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute(
+      `INSERT INTO stock_history (item_id, date, stock_level, sales) VALUES (?, ?, ?, ?)`,
+      [entry.itemId, entry.date, entry.stockLevel, entry.sales]
+    );
+  } finally {
+    if (connection) await connection.release();
+  }
+}
+
+// --- Activity Log ---
+export type ActivityLogEntry = {
+  id: string;
+  itemId: string;
+  date: string;
+  user: string;
+  action: string;
+  quantity: number;
+  details: string;
+};
+
+export async function getActivityLog(itemId: string): Promise<ActivityLogEntry[]> {
+  let connection;
+  try {
+    connection = await getConnection();
+    const [rows] = await connection.execute(
+      `SELECT id, item_id as itemId, date, user, action, quantity, details FROM activity_log WHERE item_id = ? ORDER BY date DESC`,
+      [itemId]
+    );
+    return (rows as any[]).map(row => ({
+      id: String(row.id),
+      itemId: String(row.itemId),
+      date: row.date,
+      user: row.user,
+      action: row.action,
+      quantity: Number(row.quantity),
+      details: row.details
+    }));
+  } finally {
+    if (connection) await connection.release();
+  }
+}
+
+export async function addActivityLog(entry: Omit<ActivityLogEntry, 'id'>): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    await connection.execute(
+      `INSERT INTO activity_log (item_id, date, user, action, quantity, details) VALUES (?, ?, ?, ?, ?, ?)`,
+      [entry.itemId, entry.date, entry.user, entry.action, entry.quantity, entry.details]
+    );
+  } finally {
+    if (connection) await connection.release();
+  }
+}
+
+type UpdateItem = {
+  id: string;
+  name?: string;
+  sku?: string;
+  description?: string;
+  price?: number;
+  cost?: number;
+  quantity?: number;
+  brand?: string;
+  model?: string;
+  status?: 'in-stock' | 'low-stock' | 'out-of-stock' | 'discontinued';
+  supplierId?: number;
+  provenance?: string;
+  warranty_days?: number;
+  imageUrl?: string;
+};
+
+export async function updateItem(item: UpdateItem): Promise<void> {
+  let connection;
+  try {
+    connection = await getConnection();
+    // Build dynamic SQL for only provided fields
+    const fields = [];
+    const values = [];
+    if (item.name !== undefined) { fields.push('name = ?'); values.push(item.name); }
+    if (item.sku !== undefined) { fields.push('sku = ?'); values.push(item.sku); }
+    if (item.description !== undefined) { fields.push('description = ?'); values.push(item.description); }
+    if (item.price !== undefined) { fields.push('price = ?'); values.push(item.price); }
+    if (item.cost !== undefined) { fields.push('cost = ?'); values.push(item.cost); }
+    if (item.quantity !== undefined) { fields.push('quantity = ?'); values.push(item.quantity); }
+    if (item.brand !== undefined) { fields.push('brand = ?'); values.push(item.brand); }
+    if (item.model !== undefined) { fields.push('model = ?'); values.push(item.model); }
+    if (item.status !== undefined) { fields.push('status = ?'); values.push(item.status); }
+    if (item.supplierId !== undefined) { fields.push('supplier_id = ?'); values.push(item.supplierId); }
+    if (item.provenance !== undefined) { fields.push('provenance = ?'); values.push(item.provenance); }
+    if (item.warranty_days !== undefined) { fields.push('warranty_days = ?'); values.push(item.warranty_days); }
+    if (item.imageUrl !== undefined) { fields.push('image_url = ?'); values.push(item.imageUrl); }
+    if (fields.length === 0) return;
+    values.push(item.id);
+    const sql = `UPDATE Items SET ${fields.join(', ')} WHERE id = ?`;
+    await connection.execute(sql, values);
+  } catch (error) {
+    console.error('Failed to update item:', error);
+    throw new Error('Could not update the item in the database.');
+  } finally {
+    if (connection) {
+      try {
+        await connection.release();
+      } catch (releaseError) {
+        console.error('Error releasing database connection:', releaseError);
+      }
+    }
+  }
+}
+
 
 import { getConnection } from '@/lib/db';
 import { Item } from '@/data/items'; // Re-using the Item type for structure
@@ -77,14 +282,14 @@ export async function getSuppliers(): Promise<Supplier[]> {
         const [rows] = await connection.execute(
             `SELECT id, name, contact_person as contactPerson, email, phone, items_supplied as itemsSupplied FROM suppliers`
         );
-        const suppliers: Supplier[] = (rows as any[]).map(row => ({
-            id: String(row.id),
-            name: row.name,
-            contactPerson: row.contactPerson,
-            email: row.email,
-            phone: row.phone,
-            itemsSupplied: row.itemsSupplied,
-        }));
+    const suppliers: Supplier[] = (rows as any[]).map(row => ({
+      id: Number(row.id),
+      name: row.name,
+      contact_person: row.contactPerson,
+      email: row.email,
+      phone: row.phone,
+      items_supplied: row.itemsSupplied,
+    }));
         return suppliers;
     } catch (error) {
         console.error('Failed to fetch suppliers:', error);

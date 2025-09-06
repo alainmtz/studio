@@ -1,106 +1,145 @@
 
-"use client";
-
+'use client';
+import MuiBox from '@mui/material/Box';
+import MuiFormControl from '@mui/material/FormControl';
+import MuiInputLabel from '@mui/material/InputLabel';
+import MuiOutlinedInput from '@mui/material/OutlinedInput';
+import MuiButton from '@mui/material/Button';
+import MuiTypography from '@mui/material/Typography';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-// import { getSuppliers } from "@/data/suppliers";
+import { getSuppliers, type Supplier } from "@/data/suppliers";
 import { useTranslation } from "@/hooks/use-translation";
-import { createItem } from "@/actions/inventory";
+import { updateItem } from "@/actions/inventory";
+import type { Item } from "@/data/items";
+
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DialogHeaderWithDescription } from "@/components/ui/dialog-header-with-description";
+import { useEffect, useState, useRef } from "react";
+
+// Move hooks to top-level scope
+const _useState = useState;
+const _useRef = useRef;
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  sku: z.string().min(2, {
-    message: "SKU must be at least 2 characters.",
-  }),
+  name: z.string().min(2),
+  sku: z.string().min(2),
   description: z.string().optional(),
-  price: z.coerce.number().min(0, {
-    message: "Price must be a positive number.",
-  }),
-  stock: z.coerce.number().min(0, {
-    message: "Stock must be a positive number.",
-  }),
-  category: z.string().min(2, {
-    message: "Category must be at least 2 characters.",
-  }),
-  supplierId: z.coerce.number().min(1, {
-    message: "Please select a supplier.",
-  }),
-  status: z.enum(["in-stock", "low-stock", "out-of-stock"]),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional(),
+  price: z.coerce.number().min(0),
+  stock: z.coerce.number().min(0),
+  category: z.string().min(2),
+  supplierId: z.coerce.number().min(1),
+  status: z.enum(["in-stock", "low-stock", "out-of-stock", "discontinued"]).optional(),
+  imageUrl: z.string().optional(),
 });
 
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import { getSuppliers, type Supplier } from "@/data/suppliers";
-
-export function AddItemForm({ open, onFormSubmit, onCancel }: { open: boolean; onFormSubmit: () => void; onCancel: () => void }) {
-  const { toast } = useToast();
-  const { t } = useTranslation();
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+export function EditItemForm({ open, item, onFormSubmit, onCancel }: { open: boolean; item: Item | null; onFormSubmit: () => void; onCancel: () => void }) {
+  if (!item) return null;
+  const [suppliers, setSuppliers] = _useState<Supplier[]>([]);
   useEffect(() => {
     getSuppliers().then(setSuppliers).catch(() => setSuppliers([]));
   }, []);
+  const [imageFile, setImageFile] = _useState<File | null>(null);
+  const [uploading, setUploading] = _useState(false);
+  const fileInputRef = _useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const { t } = useTranslation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      sku: "",
-      description: "",
-      price: 0,
-      stock: 0,
-      category: "",
-      supplierId: undefined,
-      status: "in-stock",
-      imageUrl: "",
+      name: item.name,
+      sku: item.sku,
+      description: item.description ?? "",
+      price: item.price,
+      stock: item.stock,
+      category: item.category ?? "",
+      supplierId: Number(item.supplier.id),
+      status: item.status ?? "in-stock",
+      imageUrl: item.images[0]?.url?.replace("/uploads/", "") ?? "",
+    },
+    values: {
+      name: item.name,
+      sku: item.sku,
+      description: item.description ?? "",
+      price: item.price,
+      stock: item.stock,
+      category: item.category ?? "",
+      supplierId: Number(item.supplier.id),
+      status: item.status ?? "in-stock",
+      imageUrl: item.images[0]?.url?.replace("/uploads/", "") ?? "",
     },
   });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+  };
+  const handleUpload = async () => {
+    if (!imageFile) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    formData.append("itemId", item.id);
+    try {
+      const res = await fetch("/api/upload-item-image", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        form.setValue("imageUrl", data.imageUrl);
+      }
+    } catch (err) {
+      // handle error
+    } finally {
+      setUploading(false);
+    }
+  };
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await createItem(values);
+      await updateItem({
+        id: item.id,
+        name: values.name,
+        sku: values.sku,
+        description: values.description,
+        price: values.price,
+        quantity: values.stock,
+        brand: values.category,
+        supplierId: values.supplierId,
+        status: values.status,
+        imageUrl: values.imageUrl,
+      });
       toast({
-        title: t('addItemForm.toast.title'),
-        description: t('addItemForm.toast.description', { name: values.name }),
+        title: t('editItemForm.toast.title'),
+        description: t('editItemForm.toast.description', { name: values.name }),
       });
       onFormSubmit();
     } catch (error) {
       toast({
         variant: "destructive",
-        title: t('addItemForm.toast.errorTitle') || 'Failed to add item',
-        description: t('addItemForm.toast.errorDescription') || 'Could not save the new item to the database.',
+        title: t('editItemForm.toast.errorTitle') || 'Failed to update item',
+        description: t('editItemForm.toast.errorDescription') || 'Could not update the item in the database.',
       });
     }
   }
   return (
     <Dialog open={open} onOpenChange={v => !v && onCancel()}>
       <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t('inventory.addItem')}</DialogTitle>
-        </DialogHeader>
+        <DialogHeaderWithDescription
+          title="Edit Item"
+          description="Update the details for this item."
+          titleKey="editItemForm.title"
+          descriptionKey="editItemForm.description"
+          defaultTitle="Edit Item"
+          defaultDescription="Update the details for this item."
+        />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 max-h-[70vh] overflow-y-auto p-1">
             <div className="grid md:grid-cols-2 gap-4">
@@ -172,7 +211,7 @@ export function AddItemForm({ open, onFormSubmit, onCancel }: { open: boolean; o
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {suppliers.map(supplier => (
+                      {suppliers.map((supplier: Supplier) => (
                         <SelectItem key={supplier.id} value={String(supplier.id)}>
                           {supplier.name}
                         </SelectItem>
@@ -197,6 +236,7 @@ export function AddItemForm({ open, onFormSubmit, onCancel }: { open: boolean; o
                       <SelectItem value="in-stock">{t('inventory.status.instock')}</SelectItem>
                       <SelectItem value="low-stock">{t('inventory.status.lowstock')}</SelectItem>
                       <SelectItem value="out-of-stock">{t('inventory.status.outofstock')}</SelectItem>
+                      <SelectItem value="discontinued">{t('inventory.status.discontinued')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -212,9 +252,47 @@ export function AddItemForm({ open, onFormSubmit, onCancel }: { open: boolean; o
                 </FormItem>
               )} />
             </div>
+            {/* Material UI file upload */}
+            <MuiBox mt={4} p={2} bgcolor="#f9fafb" borderRadius={2} boxShadow={1}>
+              <MuiFormControl fullWidth>
+                <MuiInputLabel htmlFor="item-image">Imagen del producto</MuiInputLabel>
+                <MuiOutlinedInput
+                  id="item-image"
+                  type="file"
+                  inputRef={fileInputRef}
+                  inputProps={{ accept: "image/*" }}
+                  onChange={handleFileChange}
+                  label="Imagen del producto"
+                  sx={{ borderRadius: 2, bgcolor: '#fff' }}
+                />
+              </MuiFormControl>
+              {imageFile && (
+                <MuiBox display="flex" alignItems="center" gap={2} mt={2}>
+                  <MuiButton
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpload}
+                    disabled={uploading}
+                    sx={{ borderRadius: 2, boxShadow: 1 }}
+                  >
+                    {uploading ? "Subiendo..." : "Subir imagen"}
+                  </MuiButton>
+                  <MuiTypography variant="caption" color="textSecondary">{imageFile.name}</MuiTypography>
+                </MuiBox>
+              )}
+              {form.watch("imageUrl") && (
+                <MuiBox mt={2} display="flex" justifyContent="center">
+                  <img
+                    src={(form.watch("imageUrl") || "").startsWith("/uploads/") ? (form.watch("imageUrl") || "") : `/uploads/${form.watch("imageUrl") || ""}`}
+                    alt="Imagen del producto"
+                    style={{ height: 96, borderRadius: 12, border: '1px solid #e5e7eb', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                  />
+                </MuiBox>
+              )}
+            </MuiBox>
             <div className="flex justify-end pt-4 gap-2">
               <Button type="button" variant="outline" onClick={onCancel}>{t('common.cancel')}</Button>
-              <Button type="submit">{t('addItemForm.submitButton')}</Button>
+              <Button type="submit">{t('editItemForm.submitButton') || 'Save Changes'}</Button>
             </div>
           </form>
         </Form>

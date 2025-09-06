@@ -1,3 +1,8 @@
+import { getInventoryItems } from "@/actions/inventory";
+
+export async function getItems(): Promise<Item[]> {
+    return await getInventoryItems();
+}
 export type Item = {
     id: string;
     name: string;

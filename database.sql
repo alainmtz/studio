@@ -1,3 +1,23 @@
+-- Suppliers table
+CREATE TABLE IF NOT EXISTS Suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contactPerson VARCHAR(255),
+    email VARCHAR(255),
+    phone VARCHAR(50),
+    itemsSupplied INT DEFAULT 0,
+    brand VARCHAR(255),
+    provenance VARCHAR(255)
+);
+
+-- Supplier-Items relation (optional, for products supplied)
+CREATE TABLE IF NOT EXISTS SupplierItems (
+    supplierId INT,
+    itemId INT,
+    PRIMARY KEY (supplierId, itemId),
+    FOREIGN KEY (supplierId) REFERENCES Suppliers(id) ON DELETE CASCADE,
+    FOREIGN KEY (itemId) REFERENCES Items(id) ON DELETE CASCADE
+);
 -- Base de datos para el proyecto de inventario
 -- Versión compatible con MariaDB/MySQL
 
