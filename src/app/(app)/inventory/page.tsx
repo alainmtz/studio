@@ -38,6 +38,7 @@ import { items as staticItems, type Item } from "@/data/items"; // Keep static i
 import { useTranslation } from "@/hooks/use-translation";
 import { getInventoryItems } from "@/actions/inventory";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function InventoryPage() {
@@ -46,22 +47,29 @@ export default function InventoryPage() {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
   const { t } = useTranslation();
+  const { toast } = useToast();
+
+  const fetchItems = async () => {
+    setIsLoading(true);
+    try {
+      const dbItems = await getInventoryItems();
+      setItems(dbItems);
+      console.log("Fetched items from DB:", dbItems);
+    } catch (error) {
+      console.error("Failed to fetch items from DB", error);
+       toast({
+        variant: "destructive",
+        title: "Failed to load inventory",
+        description: "Could not connect to the database or find items. Please check the connection settings and if the 'products' table exists.",
+      });
+      setItems([]); // Set to empty array on error
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadItems() {
-      setIsLoading(true);
-      try {
-        const dbItems = await getInventoryItems();
-        setItems(dbItems);
-      } catch (error) {
-        console.error("Failed to fetch items from DB", error);
-        // Optionally, set items to static data as a fallback
-        // setItems(staticItems);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadItems();
+    fetchItems();
   }, []);
 
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
@@ -233,11 +241,10 @@ export default function InventoryPage() {
           <AddItemForm onFormSubmit={() => {
             setIsAddItemDialogOpen(false);
             // Refresh items list
-             getInventoryItems().then(items => setItems(items));
+             fetchItems();
           }} />
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-
