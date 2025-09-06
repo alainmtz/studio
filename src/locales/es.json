@@ -64,6 +64,7 @@
     "addItem": "Añadir Artículo",
     "inStock": "en stock",
     "filterByCategory": "Filtrar por Categoría",
+    "noItems": "No se encontraron artículos en tu inventario.",
     "status": {
       "instock": "En Stock",
       "lowstock": "Poco Stock",

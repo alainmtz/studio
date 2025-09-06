@@ -9,7 +9,7 @@ import {
   File,
   ListFilter,
 } from "lucide-react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,17 +34,64 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ItemDetails } from "@/components/item-details";
 import { AddItemForm } from "@/components/add-item-form";
-import { items, type Item } from "@/data/items";
+import { items as staticItems, type Item } from "@/data/items"; // Keep static items as fallback/example
 import { useTranslation } from "@/hooks/use-translation";
+import { getInventoryItems } from "@/actions/inventory";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function InventoryPage() {
+  const [items, setItems] = useState<Item[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
   const { t } = useTranslation();
 
+  useEffect(() => {
+    async function loadItems() {
+      setIsLoading(true);
+      try {
+        const dbItems = await getInventoryItems();
+        setItems(dbItems);
+      } catch (error) {
+        console.error("Failed to fetch items from DB", error);
+        // Optionally, set items to static data as a fallback
+        // setItems(staticItems);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadItems();
+  }, []);
+
   const renderItemCards = (filter?: "in-stock" | "low-stock" | "out-of-stock") => {
     const filteredItems = filter ? items.filter(item => item.status === filter) : items;
+    
+    if (isLoading) {
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card key={i}>
+                <Skeleton className="aspect-video w-full rounded-t-lg" />
+                <CardContent className="p-4 grid gap-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-1/4" />
+                  <Skeleton className="h-5 w-1/3" />
+                </CardContent>
+                <CardFooter className="p-4 flex items-center justify-between border-t">
+                  <Skeleton className="h-6 w-1/4" />
+                  <Skeleton className="h-5 w-1/3" />
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        );
+    }
+
+    if (items.length === 0) {
+        return <p className="text-center text-muted-foreground py-8">{t('inventory.noItems')}</p>
+    }
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredItems.map((item) => (
@@ -55,7 +102,7 @@ export default function InventoryPage() {
                   className="aspect-video w-full rounded-t-lg object-cover"
                   height="180"
                   width="320"
-                  src={`https://picsum.photos/seed/${item.sku}/320/180`}
+                  src={item.images[0]?.url || `https://picsum.photos/seed/${item.sku}/320/180`}
                   data-ai-hint="product image"
                 />
             </CardHeader>
@@ -86,7 +133,7 @@ export default function InventoryPage() {
                       </DropdownMenu>
                 </div>
                  <Badge variant={item.status === 'out-of-stock' ? 'destructive' : 'secondary'} className={`w-fit ${item.status === 'low-stock' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-300' : item.status === 'in-stock' ? 'bg-green-400/20 text-green-700 dark:text-green-300' : ''}`}>
-                    {t(`inventory.status.${item.status.replace('-', '')}` as any)}
+                    {t(`inventory.status.${item.status.replace('-', '')}` as any, { defaultValue: item.status })}
                  </Badge>
             </CardContent>
             <CardFooter className="p-4 flex items-center justify-between border-t">
@@ -183,9 +230,14 @@ export default function InventoryPage() {
               {t('addItemForm.description')}
             </DialogDescription>
           </DialogHeader>
-          <AddItemForm onFormSubmit={() => setIsAddItemDialogOpen(false)} />
+          <AddItemForm onFormSubmit={() => {
+            setIsAddItemDialogOpen(false);
+            // Refresh items list
+             getInventoryItems().then(items => setItems(items));
+          }} />
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+

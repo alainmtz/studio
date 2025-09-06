@@ -27,6 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { suppliers } from "@/data/suppliers";
 import { useTranslation } from "@/hooks/use-translation";
+import { createItem } from "@/actions/inventory";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -45,7 +46,7 @@ const formSchema = z.object({
   category: z.string().min(2, {
     message: "Category must be at least 2 characters.",
   }),
-  supplierId: z.string().min(1, {
+  supplierId: z.coerce.number().min(1, {
     message: "Please select a supplier.",
   }),
   status: z.enum(["in-stock", "low-stock", "out-of-stock"]),
@@ -66,19 +67,27 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
       price: 0,
       stock: 0,
       category: "",
-      supplierId: "",
+      supplierId: undefined,
       status: "in-stock",
       imageUrl: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("New item added:", values);
-    toast({
-      title: t('addItemForm.toast.title'),
-      description: t('addItemForm.toast.description', { name: values.name }),
-    });
-    onFormSubmit();
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await createItem(values);
+      toast({
+        title: t('addItemForm.toast.title'),
+        description: t('addItemForm.toast.description', { name: values.name }),
+      });
+      onFormSubmit();
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Failed to add item",
+        description: "Could not save the new item to the database.",
+      });
+    }
   }
 
   return (
@@ -176,7 +185,7 @@ export function AddItemForm({ onFormSubmit }: { onFormSubmit: () => void }) {
             render={({ field }) => (
                 <FormItem>
                 <FormLabel>{t('addItemForm.supplier.label')}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
                     <FormControl>
                     <SelectTrigger>
                         <SelectValue placeholder={t('addItemForm.supplier.placeholder')} />

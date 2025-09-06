@@ -64,6 +64,7 @@
     "addItem": "Add Item",
     "inStock": "in stock",
     "filterByCategory": "Filter by Category",
+    "noItems": "No items found in your inventory.",
     "status": {
       "instock": "In Stock",
       "lowstock": "Low Stock",
